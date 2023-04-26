@@ -1,6 +1,6 @@
 version: "3.8"
 services:
-  bank1:
+  nginx1:
     build: .
     container_name: first
     ports:
@@ -8,7 +8,7 @@ services:
     networks:
       - TEST_NET_1
 
-  bank2:
+  nginx2:
     build: .
     container_name: second
     ports:

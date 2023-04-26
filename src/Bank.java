@@ -1,15 +1,19 @@
+import java.io.IOException;
+import java.net.*;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * class Bank
- * Serialization is the process of converting an object into a stream of bytes,
+ *
  */
-public class Bank{
+public class Bank implements Runnable{
     private final String name;
     private final int ID;
     private double accountBalance;
     private HashMap<Stock, Double> stocks;
+    private DatagramSocket datagramSocket;
+    private static int port = 8080;
     private void addDefaultStocks(){
         this.stocks.put(new Stock("SGS", 35, 140), 12000.0);
         this.stocks.put(new Stock("SAS", 36, 172), 12000.0);
@@ -33,6 +37,11 @@ public class Bank{
         this.name = name;
         this.ID = ID;
         this.stocks = new HashMap<>();
+        try {
+            this.datagramSocket = new DatagramSocket(port++, InetAddress.getByName("localhost"));
+        } catch (SocketException | UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
         addDefaultStocks();
         adjustAccountBalance();
     }
@@ -63,5 +72,24 @@ public class Bank{
     public void addStock(Stock stock, double amount){
         this.stocks.put(stock, amount);
         adjustAccountBalance();
+    }
+
+    @Override
+    public void run() {
+        while(true){
+            try {
+                System.out.println("Receiving from port " + datagramSocket.getPort());
+                datagramSocket.receive(new DatagramPacket(new byte[1024], 1024));
+                System.out.println(datagramSocket.getPort());
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

@@ -11,9 +11,16 @@ public class Main {
         DeutscheBank.addStock(Google, 156);
         DeutscheBank.addStock(Microsoft, 12);
 
-        DeutscheBank.printAccountBalance();
-        CommerzBank.printAccountBalance();
-        Sparkasse.printAccountBalance();
+//        StockExchange stockExchange = new StockExchange("Stock Exchange", 1);
+//        stockExchange.run();
+
+
+        new Thread(DeutscheBank).start();
+        new Thread(CommerzBank).start();
+        new Thread(Sparkasse).start();
+        //new Thread(stockExchange).start();
+
+
 
 
 
