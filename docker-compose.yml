@@ -1,0 +1,23 @@
+version: "3.8"
+services:
+  bank1:
+    build: .
+    container_name: first
+    ports:
+      - 8080:80
+    networks:
+      - TEST_NET_1
+
+  bank2:
+    build: .
+    container_name: second
+    ports:
+      - 8081:80
+    networks:
+      - TEST_NET_1
+
+
+networks:
+  TEST_NET_1:
+    name: test_net_1
+    driver: bridge
