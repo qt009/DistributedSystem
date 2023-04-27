@@ -1,32 +1,23 @@
-public class Stock {
-    private String name;
-    private int ID;
+import java.io.Serializable;
 
-    private double value;
+public class Stock implements Serializable {
+    private String abbreviation;
+    private double price;
 
-    public Stock(String name, int ID, double value) {
-        this.name = name;
-        this.ID = ID;
-        this.value = value;
+    public Stock(String abbreviation, double price) {
+        this.abbreviation = abbreviation;
+        this.price = price;
     }
 
-    public void setValue(double value) {
-        this.value = value;
-    }
-    public Stock(String name, int ID) {
-        this.name = name;
-        this.ID = ID;
+    public String getAbbreviation() {
+        return abbreviation;
     }
 
-    public String getName() {
-        return name;
+    public double getPrice() {
+        return price;
     }
 
-    public int getID() {
-        return ID;
-    }
-
-    public double getValue() {
-        return value;
+    public void setPrice(double price) {
+        this.price = price;
     }
 }
