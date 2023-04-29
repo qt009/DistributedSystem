@@ -17,7 +17,7 @@ public class Stock implements Serializable {
         return price;
     }
 
-    public void setPrice(double price) {
+    public synchronized void setPrice(double price) {
         this.price = price;
     }
 }

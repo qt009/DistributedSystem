@@ -1,5 +1,4 @@
 import java.io.Serializable;
-import java.net.InetAddress;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.HashMap;
@@ -48,9 +47,9 @@ public class Bank implements Serializable, Runnable {
     public void printPortfolio() {
         System.out.println("Portfolio for " + name);
         for (Stock stock : securities.keySet()) {
-            System.out.println(stock.getAbbreviation() + ": " + securities.get(stock));
+            System.out.println(stock.getAbbreviation() + ": $" + stock.getPrice());
         }
-        System.out.println("Total value: " + calculatePortfolioValue());
+        System.out.println("Total value: $" + calculatePortfolioValue());
     }
 
     @Override
@@ -60,8 +59,11 @@ public class Bank implements Serializable, Runnable {
                 System.out.println("Bank is listening on port " + socket.getLocalPort());
 
                 byte[] buffer = new byte[1024];
+
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+                System.out.println("Waiting for update...");
                 socket.receive(packet);
+                System.out.println("Received update from " + packet.getAddress() + ":" + packet.getPort());
                 String message = new String(packet.getData(), 0, packet.getLength());
                 System.out.println("Received update: " + message);
                 String[] parts = message.split(",");

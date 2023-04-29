@@ -1,8 +1,6 @@
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
-import java.util.Arrays;
 import java.util.Random;
 
 public class StockExchange implements Runnable{
@@ -30,7 +28,7 @@ public class StockExchange implements Runnable{
                 socket.send(update);
                 System.out.println("Sent update for " + stock.getAbbreviation() + " to " + address + ":" + update.getPort() + "\n");
 
-                Thread.sleep(1000);
+                Thread.sleep(3000);
             }
         } catch (Exception e) {
             e.printStackTrace();

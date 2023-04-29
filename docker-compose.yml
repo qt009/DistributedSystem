@@ -1,23 +1,45 @@
 version: "3.8"
 services:
-  nginx1:
-    build: .
-    container_name: first
+  bank01:
+    build: src/Bank
+    container_name: Bank_01
     ports:
-      - 8080:80
+      - 9000:80
     networks:
-      - TEST_NET_1
+      - BANKING_NET
 
-  nginx2:
-    build: .
-    container_name: second
+  stock_exchange01:
+    build: src/StockExchange
+    container_name: StockExchange_01
     ports:
-      - 8081:80
+      - 9001:80
     networks:
-      - TEST_NET_1
+      - BANKING_NET
 
 
 networks:
-  TEST_NET_1:
-    name: test_net_1
+  BANKING_NET:
+    name: banking_net
     driver: bridge
+
+#version: "3.9"
+#
+#services:
+#  bank:
+#    build:
+#      context: ./src/Bank
+#    volumes:
+#      - ./src/Bank:/app
+#      - ./src:/src
+#    working_dir: /app
+#    command: ["java", "Bank"]
+#    depends_on:
+#      - stock_exchange
+#  stock_exchange:
+#    build:
+#      context: ./src/StockExchange
+#    volumes:
+#      - ./src/StockExchange:/app
+#      - ./src:/src
+#    working_dir: /app
+#    command: ["java", "StockExchange"]
