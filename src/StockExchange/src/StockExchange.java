@@ -14,7 +14,7 @@ public class StockExchange implements Runnable{
         Random rand = new Random();
         byte[] buffer = new byte[1024];
         try (DatagramSocket socket = new DatagramSocket()){
-            InetAddress address = InetAddress.getByName("localhost");
+
             while (true) {
                 int index = rand.nextInt(stocks.length);
                 Stock stock = stocks[index];
@@ -23,6 +23,7 @@ public class StockExchange implements Runnable{
 
                 String message = stock.getAbbreviation() + "," + newPrice;
                 System.out.println("Sending update: " + message);
+                InetAddress address = InetAddress.getByAddress(new byte[]{(byte) 172, (byte) 20, (byte) 0, (byte) 3});
                 DatagramPacket update = new DatagramPacket(message.getBytes(), message.length(), address, 9000);
                 System.out.println("message of packet: " + new String(update.getData(), 0, update.getLength()));
                 socket.send(update);

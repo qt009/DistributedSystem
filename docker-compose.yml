@@ -1,20 +1,24 @@
 version: "3.8"
 services:
   bank01:
-    build: src/Bank
+    build:
+        context: ./
+        dockerfile: ./src/Bank/Dockerfile
     container_name: Bank_01
     ports:
-      - 9000:80
+      - 9000:9000
     networks:
-      - BANKING_NET
+      BANKING_NET:
 
   stock_exchange01:
-    build: src/StockExchange
+    build:
+        context: ./
+        dockerfile: ./src/StockExchange/Dockerfile
     container_name: StockExchange_01
     ports:
-      - 9001:80
+      - 9001:9001
     networks:
-      - BANKING_NET
+      BANKING_NET:
 
 
 networks:

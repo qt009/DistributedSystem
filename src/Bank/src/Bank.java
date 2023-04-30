@@ -1,6 +1,7 @@
 import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,8 +56,8 @@ public class Bank implements Serializable, Runnable {
     @Override
     public void run() {
         while (true){
-            try (DatagramSocket socket = new DatagramSocket(9000)){
-                System.out.println("Bank is listening on port " + socket.getLocalPort());
+            try (DatagramSocket socket = new DatagramSocket(9000, InetAddress.getLocalHost())){
+                System.out.println("Bank listening on address " + socket.getLocalAddress() + ":" + socket.getLocalPort() + "\n");
 
                 byte[] buffer = new byte[1024];
 
