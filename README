@@ -3,3 +3,17 @@
 Author: Dang Quang Tran
         Manh Tan Doan
 Group: group_h_9 Do1y
+
+1. Docker configuration
+
+to build an image use:
+        "docker build -f src/../.. -t distributed_system:1.x.x ."
+
+to run that image use
+        "docker run -f src/../.. distributed_system:1.x.x"
+
+to run that image in detached mode use
+        "docker run -d distributed_system:1.x.x"
+
+to view a container running in detached mode:
+        "docker logs ${CONTAINER ID}"
