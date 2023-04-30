@@ -1,0 +1,49 @@
+version: "3.8"
+services:
+  bank01:
+    build:
+        context: ./
+        dockerfile: ./src/Bank/Dockerfile
+    container_name: Bank_01
+    ports:
+      - 9000:9000
+    networks:
+      BANKING_NET:
+
+  stock_exchange01:
+    build:
+        context: ./
+        dockerfile: ./src/StockExchange/Dockerfile
+    container_name: StockExchange_01
+    ports:
+      - 9001:9001
+    networks:
+      BANKING_NET:
+
+
+networks:
+  BANKING_NET:
+    name: banking_net
+    driver: bridge
+
+#version: "3.9"
+#
+#services:
+#  bank:
+#    build:
+#      context: ./src/Bank
+#    volumes:
+#      - ./src/Bank:/app
+#      - ./src:/src
+#    working_dir: /app
+#    command: ["java", "Bank"]
+#    depends_on:
+#      - stock_exchange
+#  stock_exchange:
+#    build:
+#      context: ./src/StockExchange
+#    volumes:
+#      - ./src/StockExchange:/app
+#      - ./src:/src
+#    working_dir: /app
+#    command: ["java", "StockExchange"]
