@@ -7,9 +7,11 @@ services:
     container_name: Bank_01
     ports:
       - 9000:9000
+    environment:
+      THIS_BANK_PORT: "9000"
     networks:
       BANKING_NET:
-        ipv4_address: 172.20.0.3
+        ipv4_address: 172.20.1.1
 
   bank02:
     build:
@@ -18,9 +20,25 @@ services:
     container_name: Bank_02
     ports:
       - 9002:9002
+    environment:
+      THIS_BANK_PORT: "9002"
     networks:
       BANKING_NET:
-        ipv4_address: 172.20.0.4
+        ipv4_address: 172.20.1.2
+
+  bank03:
+    build:
+      context: ./
+      dockerfile: ./src/Bank/Dockerfile
+    container_name: Bank_03
+    ports:
+      - 9004:9004
+    environment:
+      THIS_BANK_PORT: "9004"
+    networks:
+      BANKING_NET:
+        ipv4_address: 172.20.1.3
+
 
   stock_exchange01:
     build:
@@ -30,11 +48,14 @@ services:
     ports:
       - 9001:9001
     environment:
-      BANK_IP_1: "172.20.0.3"
+      BANK_IP_1: "172.20.1.1"
       BANK_PORT_1: "9000"
 
-      BANK_IP_2: "172.20.0.4"
+      BANK_IP_2: "172.20.1.2"
       BANK_PORT_2: "9002"
+
+      BANK_IP_3: "172.20.1.3"
+      BANK_PORT_3: "9004"
     networks:
       BANKING_NET:
         ipv4_address: 172.20.0.2
@@ -49,24 +70,3 @@ networks:
       config:
         - subnet: 172.20.0.0/16
 
-#version: "3.9"
-#
-#services:
-#  bank:
-#    build:
-#      context: ./src/Bank
-#    volumes:
-#      - ./src/Bank:/app
-#      - ./src:/src
-#    working_dir: /app
-#    command: ["java", "Bank"]
-#    depends_on:
-#      - stock_exchange
-#  stock_exchange:
-#    build:
-#      context: ./src/StockExchange
-#    volumes:
-#      - ./src/StockExchange:/app
-#      - ./src:/src
-#    working_dir: /app
-#    command: ["java", "StockExchange"]

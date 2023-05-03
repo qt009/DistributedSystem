@@ -12,6 +12,8 @@ public class Bank implements Serializable, Runnable {
     private final Map<Stock, Integer> securities; // Map of securities held by the bank
     private DatagramSocket socket;
 
+    private int totalPackageReceived = 0;
+
     public Bank(String name) {
         this.name = name;
         securities = new HashMap<>();
@@ -57,12 +59,13 @@ public class Bank implements Serializable, Runnable {
     @Override
     public void run() {
         while (true){
-            try (DatagramSocket socket = new DatagramSocket(9000, InetAddress.getLocalHost())){
+            try (DatagramSocket socket = new DatagramSocket(Integer.parseInt(System.getenv("THIS_BANK_PORT")), InetAddress.getLocalHost())){
                 System.out.println("Bank listening on address " + socket.getLocalAddress() + ":" + socket.getLocalPort() + "\n");
                 String message = receiveMessageFromSocket(socket);
+                incrementTotalPackageReceived();
                 String[] parts = message.split(",");
-                String abbreviation = parts[0];
 
+                String abbreviation = parts[0];
                 double newPrice = Double.parseDouble(parts[1]);
                 updateSecurityPrice(abbreviation, newPrice);
                 printPortfolio();
@@ -89,6 +92,11 @@ public class Bank implements Serializable, Runnable {
         String message = new String(packet.getData(), 0, packet.getLength());
         System.out.println("Received update: " + message);
         return message;
+    }
+
+    private void incrementTotalPackageReceived() {
+        totalPackageReceived++;
+        System.out.println("Total package received: " + totalPackageReceived + '\n');
     }
 }
 
