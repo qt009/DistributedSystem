@@ -17,3 +17,8 @@ to run that image in detached mode use
 
 to view a container running in detached mode:
         "docker logs ${CONTAINER ID}"
+
+2. Docker compose configuration
+
+to run and build all images in docker-compose.yml use:
+        "docker-compose up --build"
