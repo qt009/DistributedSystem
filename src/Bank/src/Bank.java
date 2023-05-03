@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -58,15 +59,7 @@ public class Bank implements Serializable, Runnable {
         while (true){
             try (DatagramSocket socket = new DatagramSocket(9000, InetAddress.getLocalHost())){
                 System.out.println("Bank listening on address " + socket.getLocalAddress() + ":" + socket.getLocalPort() + "\n");
-
-                byte[] buffer = new byte[1024];
-
-                DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-                System.out.println("Waiting for update...");
-                socket.receive(packet);
-                System.out.println("Received update from " + packet.getAddress() + ":" + packet.getPort());
-                String message = new String(packet.getData(), 0, packet.getLength());
-                System.out.println("Received update: " + message);
+                String message = receiveMessageFromSocket(socket);
                 String[] parts = message.split(",");
                 String abbreviation = parts[0];
 
@@ -86,6 +79,16 @@ public class Bank implements Serializable, Runnable {
         bank.addSecurity("AMZN", 400, 400);
         bank.addSecurity("FB", 500, 500);
         bank.run();
+    }
+
+    private String receiveMessageFromSocket(DatagramSocket socket) throws IOException {
+        byte[] buffer = new byte[1024];
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+        socket.receive(packet);
+        System.out.println("Received update from " + packet.getAddress() + ":" + packet.getPort());
+        String message = new String(packet.getData(), 0, packet.getLength());
+        System.out.println("Received update: " + message);
+        return message;
     }
 }
 

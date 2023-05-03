@@ -9,6 +9,18 @@ services:
       - 9000:9000
     networks:
       BANKING_NET:
+        ipv4_address: 172.20.0.3
+
+  bank02:
+    build:
+      context: ./
+      dockerfile: ./src/Bank/Dockerfile
+    container_name: Bank_02
+    ports:
+      - 9002:9002
+    networks:
+      BANKING_NET:
+        ipv4_address: 172.20.0.4
 
   stock_exchange01:
     build:
@@ -17,14 +29,25 @@ services:
     container_name: StockExchange_01
     ports:
       - 9001:9001
+    environment:
+      BANK_IP_1: "172.20.0.3"
+      BANK_PORT_1: "9000"
+
+      BANK_IP_2: "172.20.0.4"
+      BANK_PORT_2: "9002"
     networks:
       BANKING_NET:
+        ipv4_address: 172.20.0.2
 
 
 networks:
   BANKING_NET:
     name: banking_net
     driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16
 
 #version: "3.9"
 #
