@@ -7,6 +7,8 @@ services:
     container_name: Bank_01
     ports:
       - 9000:9000
+    environment:
+      THIS_BANK_PORT: "9000"
     networks:
       BANKING_NET:
         ipv4_address: 172.20.0.3
@@ -18,6 +20,8 @@ services:
     container_name: Bank_02
     ports:
       - 9002:9002
+    environment:
+      THIS_BANK_PORT: "9002"
     networks:
       BANKING_NET:
         ipv4_address: 172.20.0.4
@@ -49,24 +53,3 @@ networks:
       config:
         - subnet: 172.20.0.0/16
 
-#version: "3.9"
-#
-#services:
-#  bank:
-#    build:
-#      context: ./src/Bank
-#    volumes:
-#      - ./src/Bank:/app
-#      - ./src:/src
-#    working_dir: /app
-#    command: ["java", "Bank"]
-#    depends_on:
-#      - stock_exchange
-#  stock_exchange:
-#    build:
-#      context: ./src/StockExchange
-#    volumes:
-#      - ./src/StockExchange:/app
-#      - ./src:/src
-#    working_dir: /app
-#    command: ["java", "StockExchange"]

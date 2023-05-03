@@ -2,13 +2,19 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class StockExchange implements Runnable{
     private final Stock[] stocks;
 
+    private int totalPackageSent = 0;
+    Map<String, String> bankMap ;
+
     public StockExchange(Stock[] stocks) {
         this.stocks = stocks;
+        this.bankMap = setBankMapByEnvVariable();
     }
 
     public void sendUpdates() {
@@ -22,18 +28,15 @@ public class StockExchange implements Runnable{
                 double newPrice = generateNewPrice(stock.getPrice());
                 stock.setPrice(newPrice);
 
-                //InetAddress address = InetAddress.getByAddress(new byte[]{(byte) 172, (byte) 20, (byte) 0, (byte) 3});
-                //InetAddress address = InetAddress.getLocalHost();
-
-                InetAddress address = InetAddress.getByName(System.getenv("BANK_IP_1"));
-                int port = Integer.parseInt(System.getenv("BANK_PORT_1"));
-
-                String message = stock.getAbbreviation() + "," + newPrice;
-                DatagramPacket update = new DatagramPacket(message.getBytes(), message.length(), address, port);
-                System.out.println("message of packet: " + new String(update.getData(), 0, update.getLength()));
-                socket.send(update);
-                System.out.println("Sent update for " + stock.getAbbreviation() + " to " + address + ":" + update.getPort() + "\n");
-
+                for (String bankIp : bankMap.keySet()) {
+                    InetAddress address = InetAddress.getByName(bankIp);
+                    int port = Integer.parseInt(bankMap.get(bankIp));
+                    String message = stock.getAbbreviation() + "," + newPrice;
+                    DatagramPacket update = new DatagramPacket(message.getBytes(), message.length(), address, port);
+                    socket.send(update);
+                    System.out.println("Sent update for " + stock.getAbbreviation() + " to " + address + ":" + update.getPort() + "\n");
+                    incrementTotalPackageSent();
+                }
                 Thread.sleep(3000);
             }
         } catch (Exception e) {
@@ -53,6 +56,25 @@ public class StockExchange implements Runnable{
 
         double changeAmount = currentPrice * changePercent;
         return currentPrice + changeAmount;
+    }
+
+    private void incrementTotalPackageSent() {
+        totalPackageSent++;
+        System.out.println("Total package sent: " + totalPackageSent + '\n');
+    }
+
+    private Map<String, String> setBankMapByEnvVariable(){
+        Map<String, String> result = new HashMap<>();
+        Map<String, String> envMap = System.getenv();
+        for (String key : envMap.keySet()) {
+            if (key.startsWith("BANK_IP_")) {
+                String bankNum = key.substring(8);
+                String bankIp = envMap.get(key);
+                String bankPort = envMap.get("BANK_PORT_" + bankNum);
+                result.put(bankIp, bankPort);
+            }
+        }
+        return result;
     }
     public static void main(String[] args) {
         Stock[] stocks = new Stock[5];
