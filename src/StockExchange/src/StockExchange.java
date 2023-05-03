@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -21,9 +22,9 @@ public class StockExchange implements Runnable{
                 double newPrice = generateNewPrice(stock.getPrice());
                 stock.setPrice(newPrice);
 
-                String message = stock.getAbbreviation() + "," + newPrice;
-                System.out.println("Sending update: " + message);
                 InetAddress address = InetAddress.getByAddress(new byte[]{(byte) 172, (byte) 20, (byte) 0, (byte) 3});
+                //InetAddress address = InetAddress.getLocalHost();
+                String message = stock.getAbbreviation() + "," + newPrice;
                 DatagramPacket update = new DatagramPacket(message.getBytes(), message.length(), address, 9000);
                 System.out.println("message of packet: " + new String(update.getData(), 0, update.getLength()));
                 socket.send(update);

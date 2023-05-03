@@ -9,6 +9,7 @@ services:
       - 9000:9000
     networks:
       BANKING_NET:
+        ipv4_address: 172.20.0.3
 
   stock_exchange01:
     build:
@@ -25,6 +26,10 @@ networks:
   BANKING_NET:
     name: banking_net
     driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16
 
 #version: "3.9"
 #
