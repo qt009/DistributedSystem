@@ -15,6 +15,8 @@ public class Bank implements Serializable, Runnable {
 
     private int totalPackageReceived = 0;
 
+    private int totalPackageReceived = 0;
+
     public Bank(String name) {
         this.name = name;
         securities = new HashMap<>();
