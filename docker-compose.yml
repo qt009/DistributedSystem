@@ -60,6 +60,17 @@ services:
       BANKING_NET:
         ipv4_address: 172.20.0.2
 
+  browser:
+    build:
+        context: ./
+        dockerfile: ./src/Website/Dockerfile
+    container_name: Browser
+    ports:
+      - 8080:8080
+    networks:
+        BANKING_NET:
+            ipv4_address: 172.20.2.0
+
 
 networks:
   BANKING_NET:
