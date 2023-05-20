@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bank Browser</title>
+</head>
+<body>
+<h1>Bank Browser</h1>
+
+<button onclick="establishConnection()">Connect to Bank</button>
+
+<script>
+  function establishConnection() {
+    var socket = new WebSocket("ws://localhost:9000");
+
+    socket.onopen = function () {
+      console.log("Connected to Bank server");
+      socket.send("Request from browser");
+    };
+
+    socket.onmessage = function (event) {
+      console.log("Received response: " + event.data);
+      // Process the response received from the bank server
+    };
+
+    socket.onclose = function () {
+      console.log("Connection closed");
+    };
+  }
+</script>
+</body>
+</html>

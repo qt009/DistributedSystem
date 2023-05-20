@@ -10,7 +10,10 @@ import java.util.Map;
 public class Bank implements Serializable, Runnable {
     private final String name;
     private final Map<Stock, Integer> securities; // Map of securities held by the bank
-    private DatagramSocket socket;
+
+    private BankTCP bankTCP;
+
+    private int totalPackageReceived = 0;
 
     private int totalPackageReceived = 0;
 
@@ -69,6 +72,8 @@ public class Bank implements Serializable, Runnable {
                 double newPrice = Double.parseDouble(parts[1]);
                 updateSecurityPrice(abbreviation, newPrice);
                 printPortfolio();
+
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
