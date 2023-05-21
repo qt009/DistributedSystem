@@ -26,4 +26,4 @@ to run and build all images in docker-compose.yml use:
 3. Docker HTML run configuration
 
 open browser and type:
-        "http://localhost:8080/Browser.html
+        "http://localhost:8080/Browser.html"
