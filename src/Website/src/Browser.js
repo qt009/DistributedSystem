@@ -59,22 +59,23 @@ function pingURL() {
 }
 
 function totalValueRequest() {
-    socket.onopen = function () {
-        socket.send("Request Total Value");
-    };
-    socket.onmessage = function (event) {
-        document.getElementById('totalValue').setDocument(event.data);
-    };
+    socket.addEventListener('open', function (event) {
+        socket.send("Request total Value of the Bank");
+    });
+
+    socket.addEventListener('message', function (event) {
+        document.getElementById('totalValue').value = event.data;
+    });
 }
 
 function moneyAdd() {
-    socket.onopen = function () {
-        socket.send("+" . document.getElementById('changeMoney'));
-    };
+    socket.addEventListener('open', function (event) {
+        socket.send("+" . document.getElementById('changeMoney'))
+    });
 }
 
 function moneySubtract() {
-    socket.onopen = function () {
-        socket.send("-" . document.getElementById('changeMoney'));
-    }
+    socket.addEventListener('open', function (event) {
+        socket.send("-" . document.getElementById('changeMoney'))
+    });
 }
