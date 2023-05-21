@@ -1,4 +1,3 @@
 FROM nginx:latest
-COPY src/Website/src/* src/Website/src/
-COPY src/* src/
+COPY src/Website/src /usr/share/nginx/html
 
