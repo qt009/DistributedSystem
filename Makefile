@@ -6,10 +6,11 @@ stop:
 
 build:
 	docker-compose down -v
-	docker-compose build
-	docker-compose up -d --force-recreate distributed_system
-	docker-compose up -d
+	docker-compose up --build
 
+build -d:
+	docker-compose down -v
+	docker-compose up --build -d
 clean:
 	docker rm -v --force distributed_system
 	docker network rm TEST_NET_1
