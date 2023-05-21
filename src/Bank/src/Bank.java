@@ -1,8 +1,6 @@
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
+import java.net.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,24 +58,79 @@ public class Bank implements Serializable, Runnable {
 
     @Override
     public void run() {
+        runUDPSocket();
+        runTCPSocket();
+/*        try {
+            bankTCP = new BankTCP(Integer.parseInt(getThisBankPortTCP()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         while (true){
-            try (DatagramSocket socket = new DatagramSocket(Integer.parseInt(System.getenv("THIS_BANK_PORT")), InetAddress.getLocalHost())){
-                System.out.println("Bank listening on address " + socket.getLocalAddress() + ":" + socket.getLocalPort() + "\n");
-                String message = receiveMessageFromSocket(socket);
-                incrementTotalPackageReceived();
-                String[] parts = message.split(",");
-
-                String abbreviation = parts[0];
-                double newPrice = Double.parseDouble(parts[1]);
-                updateSecurityPrice(abbreviation, newPrice);
-                printPortfolio();
-
-
+            try (DatagramSocket socket = new DatagramSocket(Integer.parseInt(getThisBankPortUDP()), getInetAddress())){
+                receiveFromUDP(socket);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }*/
+    }
+
+    private void runTCPSocket() {
+        try {
+            bankTCP = new BankTCP(Integer.parseInt(getThisBankPortTCP()));
+            ServerSocket tcpServerSocket = bankTCP.getServerSocket();
+
+            while (true) {
+                Socket tcpSocket = tcpServerSocket.accept();
+                // Handle the TCP connection in a separate thread
+                Thread tcpThread = new Thread(() -> handleTCPConnection(tcpSocket));
+                tcpThread.start();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
+
+    private void runUDPSocket() {
+        Thread udpThread = new Thread(() -> {
+            try (DatagramSocket udpSocket = new DatagramSocket(Integer.parseInt(getThisBankPortUDP()), getInetAddress())) {
+                System.out.println("UDP Server listening on " + udpSocket.getLocalAddress() + ":" + udpSocket.getLocalPort());
+
+                while (true) {
+                    receiveFromUDP(udpSocket);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        udpThread.start();
+    }
+
+    private void handleTCPConnection(Socket tcpSocket) {
+    }
+
+    private void receiveFromUDP(DatagramSocket socket) throws IOException {
+        System.out.println("Bank listening on address " + socket.getLocalAddress() + ":" + socket.getLocalPort() + "\n");
+        String message = receiveMessageFromSocket(socket);
+        incrementTotalPackageReceived();
+        String[] parts = message.split(",");
+
+        String abbreviation = parts[0];
+        double newPrice = Double.parseDouble(parts[1]);
+        updateSecurityPrice(abbreviation, newPrice);
+        printPortfolio();
+    }
+
+    private static InetAddress getInetAddress() throws UnknownHostException {
+        return InetAddress.getLocalHost();
+    }
+
+    private static String getThisBankPortUDP() {
+        return System.getenv("THIS_BANK_PORT_UDP");
+    }
+    private static String getThisBankPortTCP() {
+        return System.getenv("THIS_BANK_PORT_TCP");
+    }
+
     public static void main(String[] args) {
         Bank bank = new Bank("Bank of America");
         bank.addSecurity("AAPL", 100, 100);
