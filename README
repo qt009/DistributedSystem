@@ -22,3 +22,8 @@ to view a container running in detached mode:
 
 to run and build all images in docker-compose.yml use:
         "docker-compose up --build"
+
+3. Docker HTML run configuration
+
+open browser and type:
+        "http://localhost:8080/Browser.html
