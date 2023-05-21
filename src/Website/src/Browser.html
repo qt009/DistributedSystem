@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <title>Bank Browser</title>
   <script language="JavaScript" type="text/javascript" src="Browser.js"></script>
@@ -20,6 +20,18 @@
 <input type="submit" value="Submit"
        onclick="pingURL()">
 
+<h1>Total value of the Bank</h1>
+<div>
+  <p id="totalValue">10000000&euro;</p>
+  <button onclick="totalValueRequest()">Request</button>
+</div>
+
+<h1>Update data</h1>
+<div>
+  <input type="number" name="changeMoney" id="changeMoney" placeholder="0.00">
+  <button onclick="moneyAdd()">Add</button>
+  <button onclick="moneySubtract()">Subtract</button>
+</div>
 
 </body>
 </html>
