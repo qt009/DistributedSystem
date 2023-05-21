@@ -1,5 +1,7 @@
+var socket;
+
 function establishConnection() {
-    var socket = new WebSocket("ws://localhost:9000");
+    socket = new WebSocket("ws://localhost:9000");
 
     socket.onopen = function () {
         console.log("Connected to Bank server");
@@ -54,4 +56,25 @@ function pingURL() {
     $.ajax(settings).done(function (response) {
         console.log(response);
     });
+}
+
+function totalValueRequest() {
+    socket.onopen = function () {
+        socket.send("Request Total Value");
+    };
+    socket.onmessage = function (event) {
+        document.getElementById('totalValue').setDocument(event.data);
+    };
+}
+
+function moneyAdd() {
+    socket.onopen = function () {
+        socket.send("+" . document.getElementById('changeMoney'));
+    };
+}
+
+function moneySubtract() {
+    socket.onopen = function () {
+        socket.send("-" . document.getElementById('changeMoney'));
+    }
 }
