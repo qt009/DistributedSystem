@@ -2,30 +2,24 @@
 <html>
 <head>
   <title>Bank Browser</title>
+  <script language="JavaScript" type="text/javascript" src="Browser.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 </head>
 <body>
 <h1>Bank Browser</h1>
 
 <button onclick="establishConnection()">Connect to Bank</button>
 
-<script>
-  function establishConnection() {
-    var socket = new WebSocket("ws://localhost:9000");
+<label for="url">
+  Enter the URL you want to ping:
+</label><br>
 
-    socket.onopen = function () {
-      console.log("Connected to Bank server");
-      socket.send("Request from browser");
-    };
+<input type="text" id="url"
+       name="url" style="margin: 10px;"><br>
 
-    socket.onmessage = function (event) {
-      console.log("Received response: " + event.data);
-      // Process the response received from the bank server
-    };
+<input type="submit" value="Submit"
+       onclick="pingURL()">
 
-    socket.onclose = function () {
-      console.log("Connection closed");
-    };
-  }
-</script>
+
 </body>
 </html>
