@@ -1,3 +1,5 @@
+package Stock;
+
 import java.io.Serializable;
 
 public class Stock implements Serializable {

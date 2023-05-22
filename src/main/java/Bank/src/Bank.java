@@ -1,9 +1,11 @@
+package Bank.src;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.*;
 import java.util.HashMap;
 import java.util.Map;
-
+import Stock.Stock;
 
 public class Bank implements Serializable, Runnable {
     private final String name;
