@@ -17,7 +17,7 @@ wss.on('connection', function connection(ws) {
 
         // Pass data received from the WebSocket to the TCP server
         ws.on('message', function incoming(message) {
-            console.log('Received message from WebSocket:', message);
+            console.log('Received message from WebSocket:', message.toString());
             tcpSocket.write(message);
         });
 
