@@ -1,7 +1,6 @@
-var socket;
-
+let socket;
 function establishConnection() {
-    socket = new WebSocket("ws://localhost:9000");
+    socket = new WebSocket("ws://172.20.1.1:8000");
 
     socket.onopen = function () {
         console.log("Connected to Bank server");
@@ -16,6 +15,21 @@ function establishConnection() {
     socket.onclose = function () {
         console.log("Connection closed");
     };
+    console.log("Connected to Bank server");
+    fetch('http://172.20.1.1:8000')
+        .then(response => {
+            // Output the response status code to the console
+            console.log('Response status code:', response.status);
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Process the response from the Java application
+            console.log(data);
+        })
+        .catch(error => {
+            // Handle the error
+            console.error(error);
+        });
 }
 
 function pingURL() {

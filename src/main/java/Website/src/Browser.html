@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bank Browser</title>
+  <script language="JavaScript" type="text/javascript">
+    var ws = new WebSocket('ws://172.20.2.1:5000');
+    ws.onopen = function () {
+      console.log('WebSocket connection opened.');
+    };
+    ws.onmessage = function (event) {
+      console.log('Received message from WebSocket:', event.data);
+    };
+    ws.onclose = function () {
+      console.log('WebSocket connection closed.');
+    };
+
+    function sendMessage() {
+      var input = document.getElementById('messageInput').value;
+      ws.send(input);
+    }
+  </script>
+</head>
+<body>
+<h1>Bank Browser</h1>
+
+<input type="text" id="messageInput" placeholder="Enter a message">
+<button onclick="sendMessage()">Send</button>
+</body>
+</html>

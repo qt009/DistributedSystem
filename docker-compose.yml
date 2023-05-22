@@ -3,7 +3,7 @@ services:
   bank01:
     build:
         context: ./
-        dockerfile: ./src/Bank/Dockerfile
+        dockerfile: ./src/main/java/Bank/Dockerfile
     container_name: Bank_01
     ports:
       - 9000:9000
@@ -18,7 +18,7 @@ services:
   bank02:
     build:
       context: ./
-      dockerfile: ./src/Bank/Dockerfile
+      dockerfile: ./src/main/java/Bank/Dockerfile
     container_name: Bank_02
     ports:
       - 9002:9002
@@ -33,7 +33,7 @@ services:
   bank03:
     build:
       context: ./
-      dockerfile: ./src/Bank/Dockerfile
+      dockerfile: ./src/main/java/Bank/Dockerfile
     container_name: Bank_03
     ports:
       - 9004:9004
@@ -49,7 +49,7 @@ services:
   stock_exchange01:
     build:
         context: ./
-        dockerfile: ./src/StockExchange/Dockerfile
+        dockerfile: ./src/main/java/StockExchange/Dockerfile
     container_name: StockExchange_01
     ports:
       - 9001:9001
@@ -66,16 +66,29 @@ services:
       BANKING_NET:
         ipv4_address: 172.20.0.2
 
+  webclient:
+    build:
+      context: ./
+      dockerfile: ./src/main/java/Website/Dockerfile-WebClient
+    container_name: WebClient
+    ports:
+      - 5000:80
+    networks:
+      BANKING_NET:
+        ipv4_address: 172.20.2.1
+
   browser:
     build:
         context: ./
-        dockerfile: ./src/Website/Dockerfile
+        dockerfile: ./src/main/java/Website/Dockerfile
     container_name: Browser
     ports:
       - 8080:80
     networks:
         BANKING_NET:
             ipv4_address: 172.20.2.0
+
+
 
 
 networks:
