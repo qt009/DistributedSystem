@@ -1,25 +1,28 @@
 const WebSocket = require('ws');
+const net = require('net');
 
 // Create a WebSocket server
 const wss = new WebSocket.Server({ port: 8080 });
+
+// Create a TCP socket server
+const tcpServer = net.createServer();
 
 // Handle WebSocket connection
 wss.on('connection', function connection(ws) {
     console.log('WebSocket connection established.');
 
     // Create a TCP socket connection to the Java server
-    const net = require('net');
-    const socket = net.createConnection({ port: 8000 }, function() {
+    const tcpSocket = net.createConnection({ port: 8000 }, function () {
         console.log('Connected to Java server.');
 
-        // Pass data received from the WebSocket to the Java server
+        // Pass data received from the WebSocket to the TCP server
         ws.on('message', function incoming(message) {
             console.log('Received message from WebSocket:', message);
-            socket.write(message);
+            tcpSocket.write(message);
         });
 
-        // Pass data received from the Java server to the WebSocket
-        socket.on('data', function(data) {
+        // Pass data received from the TCP server to the WebSocket
+        tcpSocket.on('data', function (data) {
             console.log('Received data from Java server:', data.toString());
             ws.send(data.toString());
         });
@@ -27,23 +30,12 @@ wss.on('connection', function connection(ws) {
         // Handle the closure of the WebSocket connection
         ws.on('close', function close() {
             console.log('WebSocket connection closed.');
-            socket.end();
+            tcpSocket.end();
         });
     });
 });
 
-const http = require('http');
-const fs = require('fs');
-
-const PORT=8080;
-
-fs.readFile('./Browser.html', function (err, html) {
-
-    if (err) throw err;
-
-    http.createServer(function(request, response) {
-        response.writeHeader(200, {"Content-Type": "text/html"});
-        response.write(html);
-        response.end();
-    }).listen(PORT);
+// Start the TCP server
+tcpServer.listen(8000, function () {
+    console.log('TCP server listening on port 8000');
 });

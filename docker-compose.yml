@@ -66,6 +66,17 @@ services:
       BANKING_NET:
         ipv4_address: 172.20.0.2
 
+  webclient:
+    build:
+      context: ./
+      dockerfile: ./src/main/java/Website/Dockerfile-WebClient
+    container_name: WebClient
+    ports:
+      - 5000:80
+    networks:
+      BANKING_NET:
+        ipv4_address: 172.20.2.1
+
   browser:
     build:
         context: ./
@@ -76,6 +87,8 @@ services:
     networks:
         BANKING_NET:
             ipv4_address: 172.20.2.0
+
+
 
 
 networks:
