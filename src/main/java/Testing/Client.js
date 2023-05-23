@@ -15,6 +15,15 @@ client.connect(port, serverAddress, () => {
     console.log('Connected to server');
     // rl.setPrompt('Enter message to send to server: ');
     // rl.prompt();
+    client.write("CONNECT" + " " + "Hello"+"\n");
+    // rl.setPrompt('Enter message to send to server: ');
+
+    for(let i = 0; i < 1000; i++){
+        client.write("POST" + " " + "Hello "+i+"\n");
+        const millisecondsToWait = 10000;
+        setTimeout(function() {
+        }, millisecondsToWait);
+    }
 });
 
 

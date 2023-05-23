@@ -82,18 +82,18 @@ services:
       BANKING_NET:
         ipv4_address: 172.20.2.1
 
-#  browser:
-#    build:
-#        context: ./
-#        dockerfile: ./src/main/java/Website/Dockerfile
-#    container_name: Browser
-#    depends_on:
-#      - webclient
-#    ports:
-#      - 8080:80
-#    networks:
-#        BANKING_NET:
-#            ipv4_address: 172.20.2.0
+  browser:
+    build:
+        context: ./
+        dockerfile: ./src/main/java/Website/Dockerfile
+    container_name: Browser
+    depends_on:
+      - webclient
+    ports:
+      - 8080:80
+    networks:
+        BANKING_NET:
+            ipv4_address: 172.20.2.0
 
 
 

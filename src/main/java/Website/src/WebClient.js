@@ -1,5 +1,6 @@
 const net = require('net');
 const readline = require('readline');
+const worker_threads = require("worker_threads");
 
 // Retrieve the Java server's IP address and port from environment variables
 const bankIp = '172.20.1.1';
@@ -10,29 +11,34 @@ const browserPort = 8080;
 
 
 const tcpSocket = new net.Socket();
+const frontEndSocket = new net.Socket();
 debugger;
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
-// const frontEndSocket = net.createConnection({ host: browserIp, port: browserPort }, function () {
-//     console.log('Connected to frontEnd.');
-//     frontEndSocket.on('close', function () {
-//         console.log('TCP connection with frontEnd closed.');
-//     });
-//
-//     // Pass data received from the TCP server to the console
-//     frontEndSocket.on('data', function (data) {
-//         console.log('Received data from Browser:', data.toString());
-//     });
-//
-// });
 
+frontEndSocket.connect(bankPort, bankIp, () => {
+    console.log('Connected to frontEnd.');
+    frontEndSocket.on('close', function () {
+        console.log('TCP connection with frontEnd closed.');
+    });
+
+    // Pass data received from the TCP server to the console
+    frontEndSocket.on('data', function (data) {
+        console.log('Received data from Browser:', data.toString());
+    });
+});
 tcpSocket.connect(bankPort, bankIp, () => {
     console.log('Connected to server');
     tcpSocket.write("CONNECT" + " " + "Hello"+"\n");
-    rl.setPrompt('Enter message to send to server: ');
-    rl.prompt();
+    // rl.setPrompt('Enter message to send to server: ');
+    for(let i = 0; i < 1000; i++){
+        const millisecondsToWait = 500;
+        setTimeout(function() {
+            tcpSocket.write("POST" + " " + "Hello "+i+"\n");
+        }, millisecondsToWait);
+    }
 });
 
 rl.on('line', (input) => {
@@ -42,16 +48,16 @@ rl.on('line', (input) => {
         tcpSocket.end();
         rl.close();
     } else {
-        tcpSocket.write("PUT" + " " + input+"\n");
+        tcpSocket.write("POST" + " " + input+"\n");
 
-        rl.prompt();
+        //rl.prompt();
     }
 });
 tcpSocket.on('data', (data) => {
     console.log(`Message from Bank: ${data}`);
     const serverMessage = data.toString();
     console.log('Bank says: ' + serverMessage);
-    rl.prompt();
+    //rl.prompt();
 });
 
 tcpSocket.on('close', () => {

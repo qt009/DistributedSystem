@@ -73,76 +73,83 @@ public class KeyValueServer {
                     // write the message we want to send
                     dataOutputStream.writeUTF("Hello from the other side!");
                     dataOutputStream.flush(); // send the message
-                    dataOutputStream.close(); // close the output stream when we're done.
+                    //.close(); // close the output stream when we're done.
 
                     System.out.println("Closing socket and terminating program.");
 
                     switch (command) {
                         case "CONNECT":
-                            if (clientConnected.containsKey(tokens[1])) {
-                                System.out.println("CONNECT: ERROR");
-                                out.println("CONNECT: ERROR");
-                                break;
-                            }
-
-                            String clientId = tokens[1];
-                            clientConnected.put(clientId, true);
-                            // keyValueStore.putIfAbsent(clientId, "");
                             out.println("CONNECT: OK");
                             System.out.println("CONNECT: OK");
-                            out.flush(); // flush the buffer to send the message immediately
+                            out.flush();
+                        /*if (clientConnected.containsKey(tokens[1])) {
+                            System.out.println("CONNECT: ERROR");
+                            out.println("CONNECT: ERROR");
+                            break;
+                        }
+
+                        String clientId = tokens[1];
+                        clientConnected.put(clientId, true);
+                        // keyValueStore.putIfAbsent(clientId, "");
+                        out.println("CONNECT: OK");
+                        System.out.println("CONNECT: OK");
+                        out.flush(); // flush the buffer to send the message immediately*/
                             break;
 
-                        case "PUT":
-                            System.out.println(clientConnected.toString());
-
-                            if (clientConnected.containsValue(true)) {
-                                String inputLine2;
-                                inputLine2 = in.readLine();
-                                keyValueStore.put(tokens[1], inputLine2);
-                                System.out.println(keyValueStore.toString());
-                                System.out.println("PUT: OK");
-                            } else {
-                                System.out.println("PUT: ERROR");
-                            }
-                            break;
+                        case "POST":
+//                        System.out.println(clientConnected.toString());
+//
+//                        if (clientConnected.containsValue(true)) {
+                            String inputLine2;
+                            inputLine2 = in.readLine();
+                            System.out.println(inputLine2);
+                            out.println("POST: OK");
+                            System.out.println("POST: OK");
+                            out.flush();
+//                            keyValueStore.put(tokens[1], inputLine2);
+//                            System.out.println(keyValueStore.toString());
+//                            System.out.println("PUT: OK");
+//                        } else {
+//                            System.out.println("PUT: ERROR");
+//                        }
+//                        break;
 
                         case "GET":
 
-                            if (clientConnected.containsValue(true)) {
-                                String value = keyValueStore.getOrDefault(tokens[1], "");
-                                if (value.isEmpty()) {
-                                    System.out.println("GET: ERROR");
-                                } else {
-                                    System.out.println(value);
-                                }
-                            } else {
+                        /*if (clientConnected.containsValue(true)) {
+                            String value = keyValueStore.getOrDefault(tokens[1], "");
+                            if (value.isEmpty()) {
                                 System.out.println("GET: ERROR");
+                            } else {
+                                System.out.println(value);
                             }
+                        } else {
+                            System.out.println("GET: ERROR");
+                        }*/
                             break;
 
                         case "DELETE":
-                            if (clientConnected.containsValue(true)) {
-                                keyValueStore.remove(tokens[1]);
-                                System.out.println("DELETE: OK");
-                            } else {
-                                System.out.println("DELETE: ERROR");
-                            }
+                        /*if (clientConnected.containsValue(true)) {
+                            keyValueStore.remove(tokens[1]);
+                            System.out.println("DELETE: OK");
+                        } else {
+                            System.out.println("DELETE: ERROR");
+                        }*/
                             break;
 
                         case "DISCONNECT":
-                            if (clientConnected.containsValue(true)) {
+                        /*if (clientConnected.containsValue(true)) {
 
-                                clientConnected.remove(tokens[0]);
-                                keyValueStore.remove(tokens[0]);
-                                clientConnected.clear();
-                                System.out.println("DISCONNECT: OK");
-                                out.println("DISCONNECT: OK");
-                                System.exit(0);
-                            } else {
-                                System.out.println("DISCONNECT: OK");
-                                out.println("DISCONNECT: OK");
-                            }
+                            clientConnected.remove(tokens[0]);
+                            keyValueStore.remove(tokens[0]);
+                            clientConnected.clear();
+                            System.out.println("DISCONNECT: OK");
+                            out.println("DISCONNECT: OK");
+                            System.exit(0);
+                        } else {
+                            System.out.println("DISCONNECT: OK");
+                            out.println("DISCONNECT: OK");
+                        }*/
                             break;
 
                         default:
