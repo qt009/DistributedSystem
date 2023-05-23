@@ -73,6 +73,11 @@ services:
     container_name: WebClient
     ports:
       - 5000:80
+    depends_on:
+      - bank01
+    environment:
+      BANK_IP_1: "172.20.1.1"
+      BANK_TCP_PORT_1: "8000"
     networks:
       BANKING_NET:
         ipv4_address: 172.20.2.1
@@ -82,6 +87,8 @@ services:
         context: ./
         dockerfile: ./src/main/java/Website/Dockerfile
     container_name: Browser
+    depends_on:
+      - webclient
     ports:
       - 8080:80
     networks:
