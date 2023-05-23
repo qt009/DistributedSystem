@@ -1,7 +1,6 @@
 const net = require('net');
 const readline = require('readline');
-const worker_threads = require("worker_threads");
-
+const WebSocket = require('ws');
 // Retrieve the Java server's IP address and port from environment variables
 const bankIp = '172.20.1.1';
 const bankPort = 8000;
@@ -18,22 +17,41 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 
-frontEndSocket.connect(bankPort, bankIp, () => {
-    console.log('Connected to frontEnd.');
-    frontEndSocket.on('close', function () {
-        console.log('TCP connection with frontEnd closed.');
-    });
+// frontEndSocket.connect(browserPort, browserIp, () => {
+//     console.log('Connected to frontEnd.');
+//     frontEndSocket.on('close', function () {
+//         console.log('TCP connection with frontEnd closed.');
+//     });
+//
+//     // Pass data received from the TCP server to the console
+//     frontEndSocket.on('data', function (data) {
+//         console.log('Received data from Browser:', data.toString());
+//     });
+// });
+const ws = new net.Socket();
 
-    // Pass data received from the TCP server to the console
-    frontEndSocket.on('data', function (data) {
-        console.log('Received data from Browser:', data.toString());
-    });
-});
+ws.onopen = function () {
+    console.log('WebSocket connection opened.');
+};
+
+ws.onmessage = function (event) {
+    console.log('Received message from WebSocket:', event.data);
+};
+
+ws.onclose = function () {
+    console.log('WebSocket connection closed.');
+};
+
+ws.onerror = function (error) {
+    console.log('WebSocket error:', error);
+};
+
+
 tcpSocket.connect(bankPort, bankIp, () => {
     console.log('Connected to server');
     tcpSocket.write("CONNECT" + " " + "Hello"+"\n");
     // rl.setPrompt('Enter message to send to server: ');
-    for(let i = 0; i < 1000; i++){
+    for(let i = 0; i < 6; i++){
         const millisecondsToWait = 500;
         setTimeout(function() {
             tcpSocket.write("POST" + " " + "Hello "+i+"\n");

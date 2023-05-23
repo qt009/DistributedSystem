@@ -2,8 +2,11 @@
 <html lang="en">
 <head>
   <title>Bank Browser</title>
-  <script language="JavaScript" type="text/javascript">
-    const ws = new WebSocket('ws://172.20.2.1:8080');
+  <script type="text/javascript">
+
+    const net = require('net');
+    let ws = new net.Socket();
+    console.log('Attempting WebSocket connection...');
     ws.onopen = function () {
       console.log('WebSocket connection opened.');
     };
@@ -20,8 +23,11 @@
     }
 
     function connectBank() {
-      const ip = document.getElementById('BankIPInput').value;
-      const port = document.getElementById('BankPortInput').value;
+      // const ip = document.getElementById('BankIPInput').value;
+      // const port = document.getElementById('BankPortInput').value;
+      const ip = "172.20.2.1";
+      const port = 5000;
+      ws = new WebSocket("ws://" + ip + ":" + port)
       ws.send("connectBank " + ip + " " + port);
     }
   </script>
