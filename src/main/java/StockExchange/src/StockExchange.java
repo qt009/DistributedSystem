@@ -39,7 +39,7 @@ public class StockExchange implements Runnable{
                     System.out.println("Sent update for " + stock.getAbbreviation() + " to " + address + ":" + update.getPort() + "\n");
                     incrementTotalPackageSent();
                 }
-                Thread.sleep(3000);
+                Thread.sleep(15000);
             }
         } catch (Exception e) {
             e.printStackTrace();
