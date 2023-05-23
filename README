@@ -26,6 +26,12 @@ to remove dangling images:
 to run and build all images in docker-compose.yml use:
         "docker-compose up --build"
 
+to run, build and run in detached mode all images and see logs of selected container using name use:
+        docker-compose up --build -d
+        docker-compose logs --follow ${service_name}
+
+        Example: docker-compose logs --follow bank01 webclient browser
+
 3. Docker HTML run configuration
 
 open browser and type:

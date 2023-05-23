@@ -1,6 +1,8 @@
 package Bank.src;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.net.*;
 import java.util.HashMap;
@@ -80,9 +82,13 @@ public class Bank implements Serializable, Runnable {
         try {
             bankTCP = new BankTCP(Integer.parseInt(getThisBankPortTCP()));
             ServerSocket tcpServerSocket = bankTCP.getServerSocket();
+            System.out.println("Still listening... " + tcpServerSocket.getLocalPort());
 
             while (true) {
                 Socket tcpSocket = tcpServerSocket.accept();
+                System.out.println("TCP connection accepted from " + tcpSocket.getInetAddress() + ":" + tcpSocket.getPort());
+                String receivedMessage = tcpSocket.getInputStream().toString();
+                System.out.println("Received message from WebClient: " + receivedMessage);
                 // Handle the TCP connection in a separate thread
                 Thread tcpThread = new Thread(() -> handleTCPConnection(tcpSocket));
                 tcpThread.start();
@@ -91,6 +97,9 @@ public class Bank implements Serializable, Runnable {
             throw new RuntimeException(e);
         }
     }
+
+
+
 
     private void runUDPSocket() {
         Thread udpThread = new Thread(() -> {
@@ -108,6 +117,13 @@ public class Bank implements Serializable, Runnable {
     }
 
     private void handleTCPConnection(Socket tcpSocket) {
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(tcpSocket.getInputStream()));
+            String message = reader.readLine();
+            System.out.println("Received message from WebClient: " + message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void receiveFromUDP(DatagramSocket socket) throws IOException {
