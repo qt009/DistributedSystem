@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import Stock.Stock;
 
+
 public class Bank implements Serializable, Runnable {
     private final String name;
     private final Map<Stock, Integer> securities; // Map of securities held by the bank
@@ -64,34 +65,20 @@ public class Bank implements Serializable, Runnable {
     public void run() {
         runUDPSocket();
         runTCPSocket();
-/*        try {
-            bankTCP = new BankTCP(Integer.parseInt(getThisBankPortTCP()));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        while (true){
-            try (DatagramSocket socket = new DatagramSocket(Integer.parseInt(getThisBankPortUDP()), getInetAddress())){
-                receiveFromUDP(socket);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }*/
     }
 
     private void runTCPSocket() {
         try {
             bankTCP = new BankTCP(Integer.parseInt(getThisBankPortTCP()));
             ServerSocket tcpServerSocket = bankTCP.getServerSocket();
-            System.out.println("Still listening... " + tcpServerSocket.getLocalPort());
 
             while (true) {
                 Socket tcpSocket = tcpServerSocket.accept();
                 System.out.println("TCP connection accepted from " + tcpSocket.getInetAddress() + ":" + tcpSocket.getPort());
-                String receivedMessage = tcpSocket.getInputStream().toString();
-                System.out.println("Received message from WebClient: " + receivedMessage);
-                // Handle the TCP connection in a separate thread
-                Thread tcpThread = new Thread(() -> handleTCPConnection(tcpSocket));
-                tcpThread.start();
+
+                ClientHandler clientHandler = new ClientHandler(tcpSocket);
+                Thread clientThread = new Thread(clientHandler);
+                clientThread.start();
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -120,7 +107,7 @@ public class Bank implements Serializable, Runnable {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(tcpSocket.getInputStream()));
             String message = reader.readLine();
-            System.out.println("Received message from WebClient: " + message);
+            System.out.println("Received message from WebClient in Thread: " + message);
         } catch (IOException e) {
             e.printStackTrace();
         }

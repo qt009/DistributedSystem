@@ -2,8 +2,11 @@
 <html lang="en">
 <head>
   <title>Bank Browser</title>
-  <script language="JavaScript" type="text/javascript">
-    const ws = new WebSocket('ws://172.20.2.1:8080');
+  <script type="text/javascript">
+
+    const net = require('net');
+    let ws = new net.Socket();
+    console.log('Attempting WebSocket connection...');
     ws.onopen = function () {
       console.log('WebSocket connection opened.');
     };
@@ -15,15 +18,29 @@
     };
 
     function sendMessage() {
-      var input = document.getElementById('messageInput').value;
+      const input = document.getElementById('messageInput').value;
       ws.send(input);
+    }
+
+    function connectBank() {
+      // const ip = document.getElementById('BankIPInput').value;
+      // const port = document.getElementById('BankPortInput').value;
+      const ip = "172.20.2.1";
+      const port = 5000;
+      ws = new WebSocket("ws://" + ip + ":" + port)
+      ws.send("connectBank " + ip + " " + port);
     }
   </script>
 </head>
 <body>
 <h1>Bank Browser</h1>
 
-<input type="text" id="messageInput" placeholder="Enter a message">
+<label for="BankIPInput"></label><input type="text" id="BankIPInput" placeholder="Enter bank IP">
+<label for="BankPortInput"></label><input type="text" id="BankPortInput" placeholder="Enter bank port">
+<button onclick="connectBank()">connect</button>
+<br>
+
+<label for="messageInput"></label><input type="text" id="messageInput" placeholder="Enter a message">
 <button onclick="sendMessage()">Send</button>
 </body>
 </html>
