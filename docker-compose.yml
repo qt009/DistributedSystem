@@ -15,56 +15,56 @@ services:
       BANKING_NET:
         ipv4_address: 172.20.1.1
 
-  bank02:
-    build:
-      context: ./
-      dockerfile: ./src/main/java/Bank/Dockerfile
-    container_name: Bank_02
-    ports:
-      - 9002:9002
-      - 8002:8002
-    environment:
-      THIS_BANK_PORT_UDP: "9002"
-      THIS_BANK_PORT_TCP: "8002"
-    networks:
-      BANKING_NET:
-        ipv4_address: 172.20.1.2
+#  bank02:
+#    build:
+#      context: ./
+#      dockerfile: ./src/main/java/Bank/Dockerfile
+#    container_name: Bank_02
+#    ports:
+#      - 9002:9002
+#      - 8002:8002
+#    environment:
+#      THIS_BANK_PORT_UDP: "9002"
+#      THIS_BANK_PORT_TCP: "8002"
+#    networks:
+#      BANKING_NET:
+#        ipv4_address: 172.20.1.2
+#
+#  bank03:
+#    build:
+#      context: ./
+#      dockerfile: ./src/main/java/Bank/Dockerfile
+#    container_name: Bank_03
+#    ports:
+#      - 9004:9004
+#      - 8004:8004
+#    environment:
+#      THIS_BANK_PORT_UDP: "9004"
+#      THIS_BANK_PORT_TCP: "8004"
+#    networks:
+#      BANKING_NET:
+#        ipv4_address: 172.20.1.3
 
-  bank03:
-    build:
-      context: ./
-      dockerfile: ./src/main/java/Bank/Dockerfile
-    container_name: Bank_03
-    ports:
-      - 9004:9004
-      - 8004:8004
-    environment:
-      THIS_BANK_PORT_UDP: "9004"
-      THIS_BANK_PORT_TCP: "8004"
-    networks:
-      BANKING_NET:
-        ipv4_address: 172.20.1.3
 
-
-  stock_exchange01:
-    build:
-        context: ./
-        dockerfile: ./src/main/java/StockExchange/Dockerfile
-    container_name: StockExchange_01
-    ports:
-      - 9001:9001
-    environment:
-      BANK_IP_1: "172.20.1.1"
-      BANK_PORT_1: "9000"
-
-      BANK_IP_2: "172.20.1.2"
-      BANK_PORT_2: "9002"
-
-      BANK_IP_3: "172.20.1.3"
-      BANK_PORT_3: "9004"
-    networks:
-      BANKING_NET:
-        ipv4_address: 172.20.0.2
+#  stock_exchange01:
+#    build:
+#        context: ./
+#        dockerfile: ./src/main/java/StockExchange/Dockerfile
+#    container_name: StockExchange_01
+#    ports:
+#      - 9001:9001
+#    environment:
+#      BANK_IP_1: "172.20.1.1"
+#      BANK_PORT_1: "9000"
+#
+#      BANK_IP_2: "172.20.1.2"
+#      BANK_PORT_2: "9002"
+#
+#      BANK_IP_3: "172.20.1.3"
+#      BANK_PORT_3: "9004"
+#    networks:
+#      BANKING_NET:
+#        ipv4_address: 172.20.0.2
 
   webclient:
     build:
