@@ -31,7 +31,7 @@ app.post('/connectToBank', (req, res) =>{
 
 //Start your server on a specified port
 app.listen(backendPort, backendIp, ()=>{
-    console.log(`Server is running on ${backendIp}:${backendPort}`)
+    console.log(`Server is runningg on ${backendIp}:${backendPort}`)
 })
 
 const bankIp = '172.20.1.1';
