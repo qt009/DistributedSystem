@@ -2,6 +2,7 @@ package Bank.src;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Objects;
 
 public class ClientHandler implements Runnable {
     private Bank bank;
@@ -22,60 +23,52 @@ public class ClientHandler implements Runnable {
 
             String inputLine;
             while ((inputLine = in.readLine()) != null) {
-                System.out.println(inputLine);
+                System.out.println("Message from Web: " + inputLine);
                 String[] tokens = inputLine.split(" ", 2);
                 String command = tokens[0];
-                String inputLine2;
-                inputLine2 = in.readLine();
+                String content = tokens[1];
 
                 if (tokens.length < 2) {
                     System.out.println("ERROR: Invalid command");
                     break;
                 }
 
+                /*OutputStream outputStream = clientSocket.getOutputStream();
 
-                // get the output stream from the socket.
-                OutputStream outputStream = clientSocket.getOutputStream();
-                // create a data output stream from the output stream so we can send data through it
                 DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
 
-                System.out.println("Sending string to the Web");
-
-                // write the message we want to send
-                dataOutputStream.writeUTF("Hello from the other side!");
-                dataOutputStream.flush(); // send the message
-                //dataOutputStream.close(); // close the output stream when we're done.
-
+                dataOutputStream.writeUTF("Sending to the other side this message: ");
+                dataOutputStream.flush();
+                dataOutputStream.close();*/
+                System.out.println("Command is " + command + " and content is " + content);
                 switch (command) {
                     case "CONNECT":
-                        out.println("CONNECT: OK");
+                        out.println("Hello from the bank! with IP: " + clientSocket.getInetAddress() + " and port: " + clientSocket.getPort());
                         System.out.println("CONNECT: OK");
-                        out.flush();
-
                         out.flush(); // flush the buffer to send the message immediately*/
                         break;
 
                     case "POST":
-                        String[] token = inputLine2.split(":", 2);
+                        String[] token = content.split(":", 2);
                         double change = Double.parseDouble(token[1]);
-                        
-                        if (token[0] == "Add") {
+
+                        if (Objects.equals(token[0], "Add")) {
+                            System.out.println("ADD" + change);
                             bank.addTotalValue(change);
-                        } else if (token[0] == "Sub") {
+                        } else if (Objects.equals(token[0], "Sub")) {
+                            System.out.println("SUB" + change);
                             bank.subTotalValue(change);
                         }
 
-                        System.out.println(inputLine2);
                         out.println("POST: OK");
                         System.out.println("POST: OK");
                         System.out.println("Update Total Value: " + bank.getTotalValue());
                         out.flush();
-
+                        break;
 
                     case "GET":
-                        inputLine2 = in.readLine();
-                        if (inputLine2 == "TOTAL") {
-                            System.out.println(inputLine2);
+                        if (Objects.equals(content, "TOTAL")) {
+                            System.out.println(content);
                             out.println(bank.getTotalValue());
                         }
                         System.out.println("GET: OK");

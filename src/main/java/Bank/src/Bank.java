@@ -171,6 +171,7 @@ public class Bank implements Serializable, Runnable {
 
     public void addTotalValue(double change) {
         reserves += change;
+        System.out.println("Reserves: " + reserves);
         setTotalValue();
     }
 
