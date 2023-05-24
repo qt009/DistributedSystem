@@ -1,5 +1,3 @@
-
-
 const backendIp = "172.20.2.1";
 const express = require('express')
 const app = express()
@@ -20,9 +18,6 @@ app.get('/', (req, res)=>{
 })
 
 
-
-
-//Route that handles login logic
 app.post('/connectToBank', (req, res) =>{
     console.log("Bank IP: " + req.body.bankIP)
     console.log("Bank port: " + req.body.bankPort)
@@ -46,27 +41,6 @@ const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
-
-
-const ws = new net.Socket();
-
-ws.onopen = function () {
-    console.log('WebSocket connection opened.');
-};
-
-ws.onmessage = function (event) {
-    console.log('Received message from WebSocket:', event.data);
-};
-
-ws.onclose = function () {
-    console.log('WebSocket connection closed.');
-};
-
-ws.onerror = function (error) {
-    console.log('WebSocket error:', error);
-};
-
-
 tcpSocket.connect(bankPort, bankIp, () => {
     console.log('Connected to server');
     tcpSocket.write("CONNECT" + " " + "Hello"+"\n");
@@ -93,8 +67,6 @@ rl.on('line', (input) => {
 });
 tcpSocket.on('data', (data) => {
     console.log(`Message from Bank: ${data}`);
-    const serverMessage = data.toString();
-    console.log('Bank says: ' + serverMessage);
     //rl.prompt();
 });
 
