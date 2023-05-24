@@ -35,9 +35,12 @@
 <body>
 <h1>Bank Browser</h1>
 
-<label for="BankIPInput"></label><input type="text" id="BankIPInput" placeholder="Enter bank IP">
-<label for="BankPortInput"></label><input type="text" id="BankPortInput" placeholder="Enter bank port">
-<button onclick="connectBank()">connect</button>
+
+<form action="http://172.20.2.1:8002/connectToBank" method=POST>
+  <label for="BankIPInput"></label><input type="text" id="BankIPInput" name = "bankIP" placeholder="Enter bank IP">
+  <label for="BankPortInput"></label><input type="text" id="BankPortInput" name = "bankPort" placeholder="Enter bank port">
+  <button type="submit">connect</button>
+</form>
 <br>
 
 <label for="messageInput"></label><input type="text" id="messageInput" placeholder="Enter a message">
