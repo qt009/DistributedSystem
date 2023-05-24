@@ -6,6 +6,9 @@ const cors = require('cors')
 const backendPort = 8002;
 let bankBalance = 0;
 
+let startTime = 0;
+let totalBytesReceived = 0;
+
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
@@ -86,11 +89,13 @@ const rl = readline.createInterface({
 });
 tcpSocket.connect(bankPort, bankIp, () => {
     console.log('Connected to server');
+    startTime = Date.now();
     tcpSocket.write("CONNECT" + " " + "Hello"+"\n");
     // rl.setPrompt('Enter message to send to server: ');
     for(let i = 0; i < 6; i++){
         const millisecondsToWait = 500;
         setTimeout(function() {
+            startTime = Date.now();
             tcpSocket.write("POST" + " " + "Add:"+randomIntFromInterval(100, 1000)+"\n");
         }, millisecondsToWait);
     }
@@ -116,6 +121,13 @@ rl.on('line', (input) => {
     }
 });
 tcpSocket.on('data', (data) => {
+    const endTime = Date.now();
+    const rtt = endTime - startTime;
+
+    totalBytesReceived += data.length;
+    const throughputMbps = (totalBytesReceived * 8 / 1000000) /  (rtt / 1000);
+
+    console.log('RTT: ', rtt, 'ms | Throughput: ', throughputMbps, 'Mbps');
     console.log(`Message from Bank: ${data}`);
     if(data.toString().includes("TotalBalance")){
         bankBalance = data.toString().split(":")[1];
