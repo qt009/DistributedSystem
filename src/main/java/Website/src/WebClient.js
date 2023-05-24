@@ -1,12 +1,38 @@
 
 
-const browserIp = '172.20.2.0';
+const backendIp = "172.20.2.1";
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const cors = require('cors')
-const browserPort = 8080;
+const backendPort = 8002;
 
+
+app.use( bodyParser.json() );       // to support JSON-encoded bodies
+
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+    extended: true}));
+app.use(cors())
+
+//You can use this to check if your server is working
+app.get('/', (req, res)=>{
+    res.send("Welcome to WebClient backend")
+})
+
+
+
+
+//Route that handles login logic
+app.post('/connectToBank', (req, res) =>{
+    console.log(req.body.bankIP)
+    console.log(req.body.bankPort)
+})
+
+
+//Start your server on a specified port
+app.listen(backendPort, backendIp, ()=>{
+    console.log(`Server is running on ${backendIp}:${backendPort}`)
+})
 
 const bankIp = '172.20.1.1';
 const bankPort = 8000;
