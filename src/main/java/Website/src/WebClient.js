@@ -11,12 +11,20 @@ app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
     extended: true}));
 app.use(cors())
-
+const jsonParser = bodyParser.json();
 //You can use this to check if your server is working
 app.get('/', (req, res)=>{
     res.send("Welcome to WebClient backend")
 })
+// This sends JSON in response to a GET request at /api
+app.get('/api', (req, res) => {
+    res.json({msg: "Hello, from the server!"});
+});
 
+// This displays the received message when a POST is sent to /api
+app.post('/api', jsonParser, (req, res) => {
+    console.log("Client message: "+req.body.msg);
+});
 
 app.post('/connectToBank', (req, res) =>{
     console.log("Bank IP: " + req.body.bankIP)
@@ -48,11 +56,13 @@ tcpSocket.connect(bankPort, bankIp, () => {
     for(let i = 0; i < 6; i++){
         const millisecondsToWait = 500;
         setTimeout(function() {
-            tcpSocket.write("POST" + " " + "Add:"+i+"\n");
+            tcpSocket.write("POST" + " " + "Add:"+randomIntFromInterval(100, 1000)+"\n");
         }, millisecondsToWait);
     }
 });
-
+function randomIntFromInterval(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min)
+}
 rl.on('line', (input) => {
 
     if (input.trim() === 'DISCONNECT') {
