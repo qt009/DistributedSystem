@@ -2,33 +2,29 @@
 <html lang="en">
 <head>
   <title>Bank Browser</title>
-  <script type="text/javascript">
-
-    const net = require('net');
-    let ws = new net.Socket();
-    console.log('Attempting WebSocket connection...');
-    ws.onopen = function () {
-      console.log('WebSocket connection opened.');
-    };
-    ws.onmessage = function (event) {
-      console.log('Received message from WebSocket:', event.data);
-    };
-    ws.onclose = function () {
-      console.log('WebSocket connection closed.');
-    };
-
-    function sendMessage() {
-      const input = document.getElementById('messageInput').value;
-      ws.send(input);
+  <script>
+    function getMsg() {
+      // Creates a promise object for retrieving the desired data
+      fetch("http://172.20.2.1:8002/api")
+          // When received, exposes the JSON component
+          .then((response) => {
+            return response.json();
+          })
+          // Displays the message on the page
+          .then((json) => {
+            document.getElementById("msg").innerHTML = "Server message: " + json.msg;
+          });
     }
-
-    function connectBank() {
-      // const ip = document.getElementById('BankIPInput').value;
-      // const port = document.getElementById('BankPortInput').value;
-      const ip = "172.20.2.1";
-      const port = 5000;
-      ws = new WebSocket("ws://" + ip + ":" + port)
-      ws.send("connectBank " + ip + " " + port);
+    // Sends message to server via POST
+    function postMsg() {
+      const data = {msg: document.getElementById("msg-box").value};
+      // Creates a promise object for sending the desired data
+      fetch("http://172.20.2.1:8002/api",{
+        method: "POST",
+        // Format of the body must match the Content-Type
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
+      });
     }
   </script>
 </head>
@@ -43,11 +39,13 @@
 </form>
 <br>
 
-<label for="messageInput"></label><input type="text" id="messageInput" placeholder="Enter a message">
-<button onclick="sendMessage()">Send</button>
+<p id="msg"></p>
+<label for="msg-box"></label><input text id="msg-box" /><br />
+<button onclick="getMsg()">Get</button>
+<button onclick="postMsg()">Post</button>
 <br>
 
-<h1>Total Value of Bank</h1>
+<!--<h1>Total Value of Bank</h1>
 <label for="totalValue"></label><p id="totalValue"></p>
 <button onclick="totalValueRequest()">Total Value</button>
 <br>
@@ -56,7 +54,7 @@
 <label for="changeTotalValue"></label>
 <input type="number" id="changeTotalValue" placeholder="0.0">
 <button onclick="moneyAdd()">Add</button>
-<button onclick="moneySubtract()">Subtract</button>
+<button onclick="moneySubtract()">Subtract</button>-->
 
 </body>
 </html>
