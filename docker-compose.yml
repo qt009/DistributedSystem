@@ -78,6 +78,7 @@ services:
     environment:
       BANK_IP_1: "172.20.1.1"
       BANK_TCP_PORT_1: "8000"
+      BANK_TCP_PORT_2: "8002"
     networks:
       BANKING_NET:
         ipv4_address: 172.20.2.1
