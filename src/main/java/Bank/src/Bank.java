@@ -12,17 +12,21 @@ import Stock.Stock;
 
 public class Bank implements Serializable, Runnable {
     private final String name;
+
+    private double reserves;
+    private double totalValue;
+
     private final Map<Stock, Integer> securities; // Map of securities held by the bank
 
     private BankTCP bankTCP;
 
     private int totalPackageReceived = 0;
 
-
     public Bank(String name) {
         this.name = name;
         securities = new HashMap<>();
-
+        this.reserves = 1000000;
+        setTotalValue();
     }
 
     public String getName() {
@@ -76,7 +80,7 @@ public class Bank implements Serializable, Runnable {
                 Socket tcpSocket = tcpServerSocket.accept();
                 System.out.println("TCP connection accepted from " + tcpSocket.getInetAddress() + ":" + tcpSocket.getPort());
 
-                ClientHandler clientHandler = new ClientHandler(tcpSocket);
+                ClientHandler clientHandler = new ClientHandler(tcpSocket, this);
                 Thread clientThread = new Thread(clientHandler);
                 clientThread.start();
             }
@@ -159,6 +163,24 @@ public class Bank implements Serializable, Runnable {
     private void incrementTotalPackageReceived() {
         totalPackageReceived++;
         System.out.println("Total package received: " + totalPackageReceived + '\n');
+    }
+
+    private void setTotalValue() {
+        totalValue = reserves + calculatePortfolioValue();
+    }
+
+    public void addTotalValue(double change) {
+        reserves += change;
+        setTotalValue();
+    }
+
+    public void subTotalValue(double change) {
+        reserves -= change;
+        setTotalValue();
+    }
+
+    public double getTotalValue() {
+        return totalValue;
     }
 }
 

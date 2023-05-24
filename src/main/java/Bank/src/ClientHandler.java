@@ -4,11 +4,13 @@ import java.io.*;
 import java.net.Socket;
 
 public class ClientHandler implements Runnable {
+    private Bank bank;
     private final Socket clientSocket;
     // private String clientUsername;
 
-    public ClientHandler(Socket clientSocket) {
+    public ClientHandler(Socket clientSocket, Bank bank) {
         this.clientSocket = clientSocket;
+        this.bank = bank;
     }
 
     @Override
@@ -23,6 +25,8 @@ public class ClientHandler implements Runnable {
                 System.out.println(inputLine);
                 String[] tokens = inputLine.split(" ", 2);
                 String command = tokens[0];
+                String inputLine2;
+                inputLine2 = in.readLine();
 
                 if (tokens.length < 2) {
                     System.out.println("ERROR: Invalid command");
@@ -52,17 +56,30 @@ public class ClientHandler implements Runnable {
                         break;
 
                     case "POST":
-                        String inputLine2;
-                        inputLine2 = in.readLine();
+                        String[] token = inputLine2.split(":", 2);
+                        double change = Double.parseDouble(token[1]);
+                        
+                        if (token[0] == "Add") {
+                            bank.addTotalValue(change);
+                        } else if (token[0] == "Sub") {
+                            bank.subTotalValue(change);
+                        }
+
                         System.out.println(inputLine2);
                         out.println("POST: OK");
                         System.out.println("POST: OK");
+                        System.out.println("Update Total Value: " + bank.getTotalValue());
                         out.flush();
 
 
                     case "GET":
-
-
+                        inputLine2 = in.readLine();
+                        if (inputLine2 == "TOTAL") {
+                            System.out.println(inputLine2);
+                            out.println(bank.getTotalValue());
+                        }
+                        System.out.println("GET: OK");
+                        out.flush();
                         break;
 
                     case "DELETE":
