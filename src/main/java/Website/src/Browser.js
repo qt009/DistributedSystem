@@ -72,7 +72,7 @@ function pingURL() {
     });
 }
 
-function totalValueRequest() {
+/*function totalValueRequest() {
     socket.addEventListener('open', function (event) {
         socket.send("Request total Value of the Bank");
     });
@@ -92,4 +92,4 @@ function moneySubtract() {
     socket.addEventListener('open', function (event) {
         socket.send("-" . document.getElementById('changeMoney'))
     });
-}
+}*/
