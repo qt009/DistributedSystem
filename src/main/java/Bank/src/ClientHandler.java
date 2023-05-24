@@ -67,9 +67,9 @@ public class ClientHandler implements Runnable {
                         break;
 
                     case "GET":
-                        if (Objects.equals(content, "TOTAL")) {
+                        if (Objects.equals(content, "TotalBalance")) {
                             System.out.println(content);
-                            out.println(bank.getTotalValue());
+                            out.println("TotalBalance:"+bank.getTotalValue());
                         }
                         System.out.println("GET: OK");
                         out.flush();

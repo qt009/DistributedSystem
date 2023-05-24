@@ -4,7 +4,7 @@ const app = express()
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const backendPort = 8002;
-
+let bankBalance = 0;
 
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 
@@ -18,17 +18,52 @@ app.get('/', (req, res)=>{
 })
 // This sends JSON in response to a GET request at /api
 app.get('/api', (req, res) => {
-    res.json({msg: "Hello, from the server!"});
+    requestTotalBalanceFromBank();
+    res.json({msg: "TotalBalance: " + bankBalance});
+    bankBalance = 0;
 });
 
 // This displays the received message when a POST is sent to /api
 app.post('/api', jsonParser, (req, res) => {
     console.log("Client message: "+req.body.msg);
+    if(req.body.msg.includes("Add")){
+        let split = req.body.msg.split(":");
+        tcpSocket.write("POST" + " " + "Add:"+split[1]+"\n");
+    }else if(req.body.msg.includes("Subtract")){
+        let split = req.body.msg.split(":");
+        tcpSocket.write("POST" + " " + "Subtract:"+split[1]+"\n");
+    }else if(req.body.msg.includes("TotalBalance")){
+        requestTotalBalanceFromBank();
+        res.json({msg: "TotalBalance: " + bankBalance});
+        bankBalance = 0;
+    }else if(req.body.msg.includes("DISCONNECT")) {
+        tcpSocket.write("DISCONNECT" + "\n");
+        tcpSocket.end();
+        rl.close();
+    }else{
+        res.json({msg: "Unknown command"});
+    }
 });
 
 app.post('/connectToBank', (req, res) =>{
     console.log("Bank IP: " + req.body.bankIP)
     console.log("Bank port: " + req.body.bankPort)
+
+    const bankIp = req.body.bankIP;
+    const bankPort = req.body.bankPort;
+    const tcpSocket = new net.Socket();
+    tcpSocket.connect(bankPort, bankIp, () => {
+        console.log('Connected to server');
+        tcpSocket.write("CONNECT" + " " + "Hello"+"\n");
+        // rl.setPrompt('Enter message to send to server: ');
+        for(let i = 0; i < 6; i++){
+            const millisecondsToWait = 500;
+            setTimeout(function() {
+                tcpSocket.write("POST" + " " + "Add:"+randomIntFromInterval(100, 1000)+"\n");
+            }, millisecondsToWait);
+        }
+
+    });
 })
 
 
@@ -63,6 +98,11 @@ tcpSocket.connect(bankPort, bankIp, () => {
 function randomIntFromInterval(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min)
 }
+
+function requestTotalBalanceFromBank(){
+    tcpSocket.write("GET" + " " + "TotalBalance"+"\n");
+
+}
 rl.on('line', (input) => {
 
     if (input.trim() === 'DISCONNECT') {
@@ -77,7 +117,10 @@ rl.on('line', (input) => {
 });
 tcpSocket.on('data', (data) => {
     console.log(`Message from Bank: ${data}`);
-    //rl.prompt();
+    if(data.toString().includes("TotalBalance")){
+        bankBalance = data.toString().split(":")[1];
+        console.log("BankBalance is now: " + bankBalance);
+    }
 });
 
 tcpSocket.on('close', () => {
@@ -89,30 +132,3 @@ tcpSocket.on('error', (err) => {
     console.log('Error connecting to server: ' + err.message);
     process.exit(1);
 });
-// Create a TCP socket connection to the Java server
-/*const tcpSocket = net.createConnection({ host: bankIp, port: bankPort }, function () {
-    console.log('Connected to Java server.');
-    tcpSocket.write('Hello, Java server!');
-    // Handle the closure of the TCP connection
-    tcpSocket.on('close', function () {
-        console.log('TCP connection closed.');
-    });
-
-    // Pass data received from the TCP server to the console
-    tcpSocket.on('data', function (data) {
-        console.log('Received data from Java server:', data.toString());
-    });
-
-    // Send data to the TCP server
-    tcpSocket.write('Hello, Java server!');
-});
-
-// Handle connection errors
-tcpSocket.on('error', function (error) {
-    console.error('Error connecting to Java server:', error);
-});
-
-// Handle the closure of the TCP connection
-tcpSocket.on('close', function () {
-    console.log('TCP connection closed.');
-});*/
