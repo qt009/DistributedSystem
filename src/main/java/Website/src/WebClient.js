@@ -24,14 +24,14 @@ app.get('/', (req, res)=>{
 
 //Route that handles login logic
 app.post('/connectToBank', (req, res) =>{
-    console.log(req.body.bankIP)
-    console.log(req.body.bankPort)
+    console.log("Bank IP: " + req.body.bankIP)
+    console.log("Bank port: " + req.body.bankPort)
 })
 
 
 //Start your server on a specified port
 app.listen(backendPort, backendIp, ()=>{
-    console.log(`Server is runningg on ${backendIp}:${backendPort}`)
+    console.log(`Server is running on ${backendIp}:${backendPort}`)
 })
 
 const bankIp = '172.20.1.1';
