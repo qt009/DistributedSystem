@@ -74,7 +74,7 @@ tcpSocket.connect(bankPort, bankIp, () => {
     for(let i = 0; i < 6; i++){
         const millisecondsToWait = 500;
         setTimeout(function() {
-            tcpSocket.write("POST" + " " + "Hello "+i+"\n");
+            tcpSocket.write("POST" + " " + "Add:"+i+"\n");
         }, millisecondsToWait);
     }
 });
