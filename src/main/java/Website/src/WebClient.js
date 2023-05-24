@@ -1,33 +1,27 @@
-const net = require('net');
-const readline = require('readline');
-const WebSocket = require('ws');
-// Retrieve the Java server's IP address and port from environment variables
-const bankIp = '172.20.1.1';
-const bankPort = 8000;
+
 
 const browserIp = '172.20.2.0';
+const express = require('express')
+const app = express()
+const bodyParser = require('body-parser')
+const cors = require('cors')
 const browserPort = 8080;
 
 
+const bankIp = '172.20.1.1';
+const bankPort = 8000;
+
+
+const net = require('net');
+const readline = require('readline');
 const tcpSocket = new net.Socket();
-const frontEndSocket = new net.Socket();
 debugger;
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
 
-// frontEndSocket.connect(browserPort, browserIp, () => {
-//     console.log('Connected to frontEnd.');
-//     frontEndSocket.on('close', function () {
-//         console.log('TCP connection with frontEnd closed.');
-//     });
-//
-//     // Pass data received from the TCP server to the console
-//     frontEndSocket.on('data', function (data) {
-//         console.log('Received data from Browser:', data.toString());
-//     });
-// });
+
 const ws = new net.Socket();
 
 ws.onopen = function () {
