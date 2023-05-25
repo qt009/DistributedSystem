@@ -76,16 +76,13 @@ public class ClientHandler implements Runnable {
                         break;
 
                     case "DELETE":
-                        /*if (clientConnected.containsValue(true)) {
-                            keyValueStore.remove(tokens[1]);
-                            System.out.println("DELETE: OK");
-                        } else {
-                            System.out.println("DELETE: ERROR");
-                        }*/
+
                         break;
 
                     case "DISCONNECT":
-
+                        in.close();
+                        out.close();
+                        clientSocket.close();
                         break;
 
                     default:
