@@ -62,7 +62,7 @@ public class Bank implements Serializable, Runnable {
         for (Stock stock : securities.keySet()) {
             System.out.println(stock.getAbbreviation() + ": $" + stock.getPrice());
         }
-        System.out.println("Total value: $" + calculatePortfolioValue());
+        System.out.println("Total stock value: $" + calculatePortfolioValue());
     }
 
     @Override
@@ -181,7 +181,7 @@ public class Bank implements Serializable, Runnable {
     }
 
     public double getTotalValue() {
-        return totalValue;
+        return totalValue + calculatePortfolioValue();
     }
 }
 
