@@ -21,6 +21,8 @@ app.get('/', (req, res)=>{
 })
 // This sends JSON in response to a GET request at /api
 app.get('/api', (req, res) => {
+    startTime = Date.now();
+    console.log("Start time: " + startTime);
     requestTotalBalanceFromBank();
     res.json({msg: "TotalBalance: " + bankBalance});
     bankBalance = 0;
@@ -29,6 +31,8 @@ app.get('/api', (req, res) => {
 // This displays the received message when a POST is sent to /api
 app.post('/api', jsonParser, (req, res) => {
     console.log("Client message: "+req.body.msg);
+    startTime = Date.now();
+    console.log("Start time: " + startTime);
     if(req.body.msg.includes("Add")){
         let split = req.body.msg.split(":");
         tcpSocket.write("POST" + " " + "Add:"+split[1]+"\n");
@@ -89,13 +93,11 @@ const rl = readline.createInterface({
 });
 tcpSocket.connect(bankPort, bankIp, () => {
     console.log('Connected to server');
-    startTime = Date.now();
     tcpSocket.write("CONNECT" + " " + "Hello"+"\n");
     // rl.setPrompt('Enter message to send to server: ');
     for(let i = 0; i < 6; i++){
         const millisecondsToWait = 500;
         setTimeout(function() {
-            startTime = Date.now();
             tcpSocket.write("POST" + " " + "Add:"+randomIntFromInterval(100, 1000)+"\n");
         }, millisecondsToWait);
     }
