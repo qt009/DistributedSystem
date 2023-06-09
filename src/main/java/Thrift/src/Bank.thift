@@ -1,0 +1,10 @@
+namespace java bank
+
+service BankService {
+    void transferMoney(1: double amount, 2: string fromAccount, 3: string toAccount) throws (1: BankException ex),
+    double getAccountBalance(1: string account) throws (1: BankException ex)
+}
+
+exception BankException {
+    1: string message
+}
