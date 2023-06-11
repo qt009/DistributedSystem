@@ -17,4 +17,4 @@ COPY src/main/java/Thrift/src/* src/main/java/Thrift/src
 RUN ./gradlew build
 CMD ["ls", "build/classes/java/main/Thrift/src"]
 # Set the command to run the application
-CMD ["java","-cp", "build/classes/java/main", "Thrift.src.Thrift"]
+CMD ["java","-cp", "build/classes/java/main", "Thrift.Thrift"]
