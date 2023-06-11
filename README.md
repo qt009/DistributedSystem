@@ -2,6 +2,7 @@
 
 Author: Dang Quang Tran
         Manh Tan Doan
+
 Group: group_h_9 Do1y
 
 1. Docker configuration
@@ -26,6 +27,7 @@ to remove dangling images:
 
         docker rmi $(docker images -a | grep "^<none>" | awk '{print $3}')
 
+
 2. Docker compose configuration
 
 to run and build all images in docker-compose.yml use:
@@ -37,8 +39,9 @@ to run, build and run in detached mode all images and see logs of selected conta
         docker-compose up --build -d
        
         docker-compose logs --follow ${service_name}
-  
-        Example: docker-compose logs --follow bank01 webclient browser
+
+Example: 
+        docker-compose logs --follow bank01 webclient browser
 
 3. Docker HTML run configuration
 
@@ -51,3 +54,7 @@ open browser and type:
         sudo apt-get install automake bison flex g++ git libboost-all-dev libevent-dev libssl-dev libtool make pkg-config
 
         sudo apt install thrift-compiler
+
+Example: To generate a service from thrift with namespace Thrift.src
+    
+        thrift -r --gen java --out src/main/java src/main/java/Thrift/Bank.thrift 

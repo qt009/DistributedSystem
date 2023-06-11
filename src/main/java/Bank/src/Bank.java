@@ -3,14 +3,14 @@ package Bank.src;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Serializable;
 import java.net.*;
 import java.util.HashMap;
 import java.util.Map;
 import Stock.Stock;
+import org.apache.thrift.TException;
+import Thrift.src.BankService;
 
-
-public class Bank implements Serializable, Runnable {
+public class Bank implements Runnable, BankService.Iface {
     private final String name;
 
     private double reserves;
@@ -182,6 +182,16 @@ public class Bank implements Serializable, Runnable {
 
     public double getTotalValue() {
         return totalValue + calculatePortfolioValue();
+    }
+
+    @Override
+    public double borrowMoney(double amount) throws TException {
+        return amount;
+    }
+
+    @Override
+    public void repayLoan(double amount) throws TException {
+        reserves -= amount;
     }
 }
 
