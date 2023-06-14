@@ -21,7 +21,7 @@ app.get('/', (req, res)=>{
 })
 // This sends JSON in response to a GET request at /api
 app.get('/api', (req, res) => {
-    startTime = Date.now();
+    //startTime = Date.now();
     console.log("Start time: " + startTime);
     requestTotalBalanceFromBank();
     res.json({msg: "TotalBalance: " + bankBalance});
@@ -92,6 +92,7 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 tcpSocket.connect(bankPort, bankIp, () => {
+    startTime = Date.now();
     console.log('Connected to server');
     tcpSocket.write("CONNECT" + " " + "Hello"+"\n");
     // rl.setPrompt('Enter message to send to server: ');

@@ -18,6 +18,7 @@ COPY gradle gradle
 COPY build.gradle .
 
 RUN ./gradlew build
+RUN ./gradlew fatJar
 
 #RUN javac src/main/java/Stock/Stock.java src/main/java/TCP/src/TCPInterface.java src/main/java/Bank/src/BankTCP.java src/main/java/Bank/src/ClientHandler.java src/main/java/Bank/src/Bank.java
 #CMD ["java", "-cp", "build/libs:build/classes/java/main/Stock:build/classes/java/main/TCP/src:build/classes/java/main/Bank/src:build/classes/java/main/", "Bank.src.Bank"]
