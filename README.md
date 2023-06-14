@@ -1,51 +1,50 @@
-***************** Distributed System Project *****************
+********************************** Distributed System Project **********************************
 
-Author: Dang Quang Tran
-        Manh Tan Doan
+Author: Dang Quang Tran | Manh Tan Doan
 
 Group: group_h_9 Do1y
 
 1. Docker configuration
 
-to build an image use:
+ to build an image use:
 
         docker build -f src/../.. -t distributed_system:1.x.x .
 
-to run that image use
+ to run that image use
 
         docker run -f src/../.. distributed_system:1.x.x
 
-to run that image in detached mode use
+ to run that image in detached mode use
 
         docker run -d distributed_system:1.x.x
 
-to view a container running in detached mode:
+ to view a container running in detached mode:
 
         docker logs ${CONTAINER ID}
 
-to remove dangling images:
+ to remove dangling images:
 
         docker rmi $(docker images -a | grep "^<none>" | awk '{print $3}')
 
 
 2. Docker compose configuration
 
-to run and build all images in docker-compose.yml use:
+ to run and build all images in docker-compose.yml use:
 
         docker-compose up --build
 
-to run, build and run in detached mode all images and see logs of selected container using name use:
+ to run, build and run in detached mode all images and see logs of selected container using name use:
         
         docker-compose up --build -d
        
         docker-compose logs --follow ${service_name}
 
-Example: 
+ Example: 
         docker-compose logs --follow bank01 webclient browser
 
 3. Docker HTML run configuration
 
-open browser and type:
+ open browser and type:
 
         http://localhost:8080/Browser.html
 
@@ -55,6 +54,6 @@ open browser and type:
 
         sudo apt install thrift-compiler
 
-Example: To generate a service from thrift with namespace Thrift.src
+ Example: To generate a service from thrift with namespace Thrift.src
     
         thrift -r --gen java --out src/main/java src/main/java/Thrift/Bank.thrift 

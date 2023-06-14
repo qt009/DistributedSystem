@@ -36,9 +36,9 @@ app.post('/api', jsonParser, (req, res) => {
     if(req.body.msg.includes("Add")){
         let split = req.body.msg.split(":");
         tcpSocket.write("POST" + " " + "Add:"+split[1]+"\n");
-    }else if(req.body.msg.includes("Subtract")){
+    }else if(req.body.msg.includes("Sub")){
         let split = req.body.msg.split(":");
-        tcpSocket.write("POST" + " " + "Subtract:"+split[1]+"\n");
+        tcpSocket.write("POST" + " " + "Sub:"+split[1]+"\n");
     }else if(req.body.msg.includes("TotalBalance")){
         requestTotalBalanceFromBank();
         res.json({msg: "TotalBalance: " + bankBalance});

@@ -1,5 +1,10 @@
 namespace java Thrift.src
+
 service BankService {
-    double borrowMoney(1: double amount);
-    void repayLoan(1: double amount);
+    LoanResponse requestLoan(1: LoanRequest request)
+}
+struct LoanRequest {1: double amount}
+enum LoanResponse {
+    APPROVED,
+    REJECTED,
 }

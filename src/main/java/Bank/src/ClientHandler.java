@@ -53,16 +53,17 @@ public class ClientHandler implements Runnable {
                         double change = Double.parseDouble(token[1]);
 
                         if (Objects.equals(token[0], "Add")) {
-                            System.out.println("ADD" + change);
+                            System.out.println("ADD " + change);
                             bank.addTotalValue(change);
                         } else if (Objects.equals(token[0], "Sub")) {
-                            System.out.println("SUB" + change);
+                            System.out.println("SUB " + change);
                             bank.subTotalValue(change);
                         }
 
                         out.println("POST: OK");
                         System.out.println("POST: OK");
                         System.out.println("Update Total Value: " + bank.getTotalValue());
+                        handlePossibleBankruptcy();
                         out.flush();
                         break;
 
@@ -105,5 +106,15 @@ public class ClientHandler implements Runnable {
             e.printStackTrace();
         }
 
+    }
+    public void handlePossibleBankruptcy(){
+        if(bank.getTotalValue() <= 0){
+            bank.askForHelp();
+        }
+
+        if(bank.isBankrupt()){
+            System.out.println("Bank is bankrupt");
+            Thread.currentThread().interrupt();
+        }
     }
 }

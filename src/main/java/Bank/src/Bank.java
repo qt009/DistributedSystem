@@ -1,16 +1,21 @@
 package Bank.src;
 
-import java.io.BufferedReader;
+import Stock.Stock;
+import Thrift.src.BankService;
+import Thrift.src.LoanRequest;
+import Thrift.src.LoanResponse;
+import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.transport.TServerTransport;
+import org.apache.thrift.transport.TSocket;
+import org.apache.thrift.transport.TTransport;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.*;
 import java.util.HashMap;
 import java.util.Map;
-import Stock.Stock;
-import org.apache.thrift.TException;
-import Thrift.src.BankService;
 
-public class Bank implements Runnable, BankService.Iface {
+public class Bank implements Runnable {
     private final String name;
 
     private double reserves;
@@ -22,11 +27,24 @@ public class Bank implements Runnable, BankService.Iface {
 
     private int totalPackageReceived = 0;
 
+
+    private boolean isBankrupt;
+
+    private BankThriftHandler bankThriftHandler;
+
     public Bank(String name) {
         this.name = name;
         securities = new HashMap<>();
         this.reserves = 1000000;
+        this.isBankrupt = false;
         setTotalValue();
+
+        try {
+            bankThriftHandler = new BankThriftHandler(this);
+            bankThriftHandler.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public String getName() {
@@ -38,7 +56,7 @@ public class Bank implements Runnable, BankService.Iface {
         securities.put(stock, quantity);
     }
 
-    public void updateSecurityPrice(String abbreviation, double newPrice) {
+    public synchronized void updateSecurityPrice(String abbreviation, double newPrice) {
         for (Stock stock : securities.keySet()) {
             if (stock.getAbbreviation().equals(abbreviation)) {
                 stock.setPrice(newPrice);
@@ -49,7 +67,7 @@ public class Bank implements Runnable, BankService.Iface {
 
 
 
-    public double calculatePortfolioValue() {
+    public synchronized double calculatePortfolioValue() {
         double total = 0;
         for (Stock stock : securities.keySet()) {
             total += stock.getPrice() * securities.get(stock);
@@ -69,6 +87,8 @@ public class Bank implements Runnable, BankService.Iface {
     public void run() {
         runUDPSocket();
         runTCPSocket();
+
+
     }
 
     private void runTCPSocket() {
@@ -107,16 +127,6 @@ public class Bank implements Runnable, BankService.Iface {
         udpThread.start();
     }
 
-    private void handleTCPConnection(Socket tcpSocket) {
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(tcpSocket.getInputStream()));
-            String message = reader.readLine();
-            System.out.println("Received message from WebClient in Thread: " + message);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void receiveFromUDP(DatagramSocket socket) throws IOException {
         System.out.println("Bank listening on address " + socket.getLocalAddress() + ":" + socket.getLocalPort() + "\n");
         String message = receiveMessageFromSocket(socket);
@@ -139,8 +149,12 @@ public class Bank implements Runnable, BankService.Iface {
     private static String getThisBankPortTCP() {
         return System.getenv("THIS_BANK_PORT_TCP");
     }
+    public String getThisBankPortThrift(){
+        return System.getenv("THIS_BANK_PORT_Thrift");
+    }
 
     public static void main(String[] args) {
+        TServerTransport serverTransport = null;
         Bank bank = new Bank("Bank of America");
         bank.addSecurity("AAPL", 100, 100);
         bank.addSecurity("GOOG", 200, 200);
@@ -160,22 +174,22 @@ public class Bank implements Runnable, BankService.Iface {
         return message;
     }
 
-    private void incrementTotalPackageReceived() {
+    private synchronized void incrementTotalPackageReceived() {
         totalPackageReceived++;
         System.out.println("Total package received: " + totalPackageReceived + '\n');
     }
 
-    private void setTotalValue() {
+    private synchronized void setTotalValue() {
         totalValue = reserves + calculatePortfolioValue();
     }
 
-    public void addTotalValue(double change) {
+    public synchronized void addTotalValue(double change) {
         reserves += change;
         System.out.println("Reserves: " + reserves);
         setTotalValue();
     }
 
-    public void subTotalValue(double change) {
+    public synchronized void subTotalValue(double change) {
         reserves -= change;
         setTotalValue();
     }
@@ -184,14 +198,70 @@ public class Bank implements Runnable, BankService.Iface {
         return totalValue + calculatePortfolioValue();
     }
 
-    @Override
-    public double borrowMoney(double amount) throws TException {
-        return amount;
+
+    public double getReserves() {
+        return reserves;
     }
 
-    @Override
-    public void repayLoan(double amount) throws TException {
-        reserves -= amount;
+    public void setReserves(double reserves) {
+        this.reserves = reserves;
+    }
+
+    public void setBankrupt(boolean bankrupt) {
+        isBankrupt = bankrupt;
+    }
+    public boolean isBankrupt() {
+        return isBankrupt;
+    }
+    public BankThriftHandler getBankThriftHandler() {
+        return bankThriftHandler;
+    }
+
+    public void askForHelp() {
+        System.out.println("SENDING HELPING REQUEST");
+        for (Map.Entry<String, Integer> entry : bankThriftHandler.getFriendlyBanks().entrySet()) {
+            String hostRpc = entry.getKey();
+            int portRpc = entry.getValue();
+
+            try{
+                TTransport transport = new TSocket(hostRpc, portRpc);
+
+                TProtocol protocol = new TBinaryProtocol(transport);
+                BankService.Client client = new BankService.Client(protocol);
+
+                double value = -getTotalValue();
+                LoanRequest request = new LoanRequest(value);
+                LoanResponse response = client.requestLoan(request);
+
+                System.out.println("Response: "+ response);
+                if(response.equals(LoanResponse.APPROVED)){
+                    System.out.println(hostRpc+ " success to rescue");
+                    this.setReserves(value);
+                    break;
+                }
+                else if(response.equals(LoanResponse.REJECTED)){
+                    System.out.println(hostRpc+" fail to rescue");
+                    //check if all friendly banks fail to rescue
+                    //if so, this bank is bankrupt
+                    Map.Entry<String, Integer> lastEntry = bankThriftHandler.getFriendlyBanks().entrySet().stream().reduce((one, two) -> two).get();
+                    if(entry.equals(lastEntry)){
+                        System.out.println("Bankrupt");
+                        setBankrupt(true);
+                    }
+
+                }
+                else {
+                    System.out.println("Else case: "+ response);
+                }
+                transport.close();
+            }
+            catch (Exception e){
+                System.out.println("Error");
+                e.printStackTrace();
+            }
+
+        }
+
     }
 }
 
