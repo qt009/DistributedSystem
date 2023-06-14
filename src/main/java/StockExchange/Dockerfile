@@ -1,5 +1,5 @@
-FROM nginx:latest
-RUN apt-get update && apt-get install -y openjdk-11-jdk
+FROM openjdk:11
+RUN apt-get update
 RUN mkdir "Verteiltes_System"
 WORKDIR "Verteiltes_System"
 COPY src/main/java/StockExchange/src/* src/main/java/StockExchange/src/
