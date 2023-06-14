@@ -4,12 +4,10 @@ import Thrift.src.BankService;
 import Thrift.src.LoanRequest;
 import Thrift.src.LoanResponse;
 import org.apache.thrift.TException;
-import org.apache.thrift.protocol.TBinaryProtocol;
-import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TSimpleServer;
-import org.apache.thrift.transport.*;
-
+import org.apache.thrift.transport.TServerSocket;
+import org.apache.thrift.transport.TServerTransport;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -25,6 +23,7 @@ public class BankThriftHandler extends Thread implements BankService.Iface {
     public BankThriftHandler(Bank bank) throws UnknownHostException {
         this.bank = bank;
         setUpFriendlyBanks();
+        System.out.println("Bank Thrift Handler constructed");
     }
 
     public Bank getBank() {
