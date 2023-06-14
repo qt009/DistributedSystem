@@ -6,7 +6,6 @@ import Thrift.src.LoanRequest;
 import Thrift.src.LoanResponse;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
-import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 
@@ -39,12 +38,7 @@ public class Bank implements Runnable {
         this.isBankrupt = false;
         setTotalValue();
 
-        try {
-            bankThriftHandler = new BankThriftHandler(this);
-            bankThriftHandler.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
     }
 
     public String getName() {
@@ -85,10 +79,21 @@ public class Bank implements Runnable {
 
     @Override
     public void run() {
+        runThrift();
         runUDPSocket();
         runTCPSocket();
 
 
+    }
+
+    private void runThrift() {
+        try {
+            System.out.println("Constructing Bank Thrift Handler");
+            bankThriftHandler = new BankThriftHandler(this);
+            bankThriftHandler.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void runTCPSocket() {
@@ -115,7 +120,7 @@ public class Bank implements Runnable {
     private void runUDPSocket() {
         Thread udpThread = new Thread(() -> {
             try (DatagramSocket udpSocket = new DatagramSocket(Integer.parseInt(getThisBankPortUDP()), getInetAddress())) {
-                System.out.println("UDP Server listening on " + udpSocket.getLocalAddress() + ":" + udpSocket.getLocalPort());
+                System.out.println("UDPP Server listening on " + udpSocket.getLocalAddress() + ":" + udpSocket.getLocalPort());
 
                 while (true) {
                     receiveFromUDP(udpSocket);
@@ -154,13 +159,13 @@ public class Bank implements Runnable {
     }
 
     public static void main(String[] args) {
-        TServerTransport serverTransport = null;
         Bank bank = new Bank("Bank of America");
         bank.addSecurity("AAPL", 100, 100);
         bank.addSecurity("GOOG", 200, 200);
         bank.addSecurity("MSFT", 300, 300);
         bank.addSecurity("AMZN", 400, 400);
         bank.addSecurity("FB", 500, 500);
+        System.out.printf("Bank %s has been created\n", bank.getName());
         bank.run();
     }
 
