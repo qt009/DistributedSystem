@@ -75,7 +75,7 @@ services:
       dockerfile: ./src/main/java/Website/Dockerfile-WebClient
     container_name: WebClient
     ports:
-      - 5000:80
+      - 6000:80
     depends_on:
       - bank01
     environment:
