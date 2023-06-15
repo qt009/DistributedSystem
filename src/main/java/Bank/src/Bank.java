@@ -79,18 +79,16 @@ public class Bank implements Runnable {
 
     @Override
     public void run() {
-        runThrift();
         runUDPSocket();
         runTCPSocket();
-
-
+        runThrift();
     }
 
     private void runThrift() {
         try {
             System.out.println("Constructing Bank Thrift Handler");
             bankThriftHandler = new BankThriftHandler(this);
-            bankThriftHandler.start();
+            bankThriftHandler.run();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -230,13 +228,14 @@ public class Bank implements Runnable {
 
             try{
                 TTransport transport = new TSocket(hostRpc, portRpc);
-
                 TProtocol protocol = new TBinaryProtocol(transport);
-                BankService.Client client = new BankService.Client(protocol);
+
+                BankThriftHandler client = new BankThriftHandler(protocol);
+                transport.open();
 
                 double value = -getTotalValue();
                 LoanRequest request = new LoanRequest(value);
-                LoanResponse response = client.requestLoan(request);
+                LoanResponse response = client.processLoanRequest(request);
 
                 System.out.println("Response: "+ response);
                 if(response.equals(LoanResponse.APPROVED)){
