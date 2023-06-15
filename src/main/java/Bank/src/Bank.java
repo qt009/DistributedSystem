@@ -79,16 +79,16 @@ public class Bank implements Runnable {
 
     @Override
     public void run() {
+        runThrift();
         runUDPSocket();
         runTCPSocket();
-        runThrift();
     }
 
     private void runThrift() {
         try {
             System.out.println("Constructing Bank Thrift Handler");
             bankThriftHandler = new BankThriftHandler(this);
-            bankThriftHandler.run();
+            bankThriftHandler.start();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -118,7 +118,7 @@ public class Bank implements Runnable {
     private void runUDPSocket() {
         Thread udpThread = new Thread(() -> {
             try (DatagramSocket udpSocket = new DatagramSocket(Integer.parseInt(getThisBankPortUDP()), getInetAddress())) {
-                System.out.println("UDPP Server listening on " + udpSocket.getLocalAddress() + ":" + udpSocket.getLocalPort());
+                System.out.println("UDP Server listening on " + udpSocket.getLocalAddress() + ":" + udpSocket.getLocalPort());
 
                 while (true) {
                     receiveFromUDP(udpSocket);
@@ -230,17 +230,17 @@ public class Bank implements Runnable {
                 TTransport transport = new TSocket(hostRpc, portRpc);
                 TProtocol protocol = new TBinaryProtocol(transport);
 
-                BankThriftHandler client = new BankThriftHandler(protocol);
+                BankService.Client client = new BankService.Client(protocol);
                 transport.open();
 
-                double value = -getTotalValue();
+                double value = 100000;
                 LoanRequest request = new LoanRequest(value);
                 LoanResponse response = client.processLoanRequest(request);
 
                 System.out.println("Response: "+ response);
                 if(response.equals(LoanResponse.APPROVED)){
                     System.out.println(hostRpc+ " success to rescue");
-                    this.setReserves(value);
+                    this.setReserves(getReserves() + value);
                     break;
                 }
                 else if(response.equals(LoanResponse.REJECTED)){

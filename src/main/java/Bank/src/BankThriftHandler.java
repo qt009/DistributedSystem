@@ -15,25 +15,19 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BankThriftHandler extends BankService.Client implements BankService.Iface, Runnable {
+public class BankThriftHandler extends Thread implements BankService.Iface {
     private final Bank bank;
     private final Map<String, Integer> friendlyBanks = new HashMap<>();
 
     private TServer server;
 
     public BankThriftHandler(Bank bank) throws UnknownHostException {
-        super(null);
         this.bank = bank;
         setUpFriendlyBanks();
         System.out.println("Bank Thrift Handler constructed");
     }
 
-    public BankThriftHandler(TProtocol protocol) throws UnknownHostException {
-        super(protocol);
-        this.bank = null;
-        setUpFriendlyBanks();
-        System.out.println("Bank Thrift Handler constructed");
-    }
+
 
     public Bank getBank() {
         return bank;
@@ -46,8 +40,8 @@ public class BankThriftHandler extends BankService.Client implements BankService
 
 
     public void startServer(){
-        System.out.println("Starting RPC Server");
         String tmp = System.getenv("THIS_BANK_PORT_THRIFT");
+        System.out.println("Starting RPC Server on port: " + tmp);
         if(tmp != null) {
             int rpcPort = Integer.parseInt(tmp);
             TServerTransport transport = null;
@@ -55,7 +49,9 @@ public class BankThriftHandler extends BankService.Client implements BankService
                 transport = new TServerSocket(rpcPort);
                 server = new TSimpleServer(
                         new TServer.Args(transport).processor(new BankService.Processor<>(this)));
+                System.out.println("RPC Server started");
                 server.serve();
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -81,18 +77,19 @@ public class BankThriftHandler extends BankService.Client implements BankService
     private void setUpFriendlyBanks() throws UnknownHostException {
         InetAddress ip = InetAddress.getLocalHost();
         String thisBankIP = ip.getHostAddress();
+        System.out.println("This Bank IP: " + thisBankIP);
 
         if (thisBankIP.equals("172.20.1.1")) {
             friendlyBanks.put("172.20.1.2", 7002);
-            friendlyBanks.put("172.20.1.3", 7003);
+            friendlyBanks.put("172.20.1.3", 7004);
         }
         if (thisBankIP.equals("172.20.1.2")) {
-            friendlyBanks.put("172.20.1.1", 7001);
-            friendlyBanks.put("172.20.1.3", 7003);
+            friendlyBanks.put("172.20.1.1", 7000);
+            friendlyBanks.put("172.20.1.3", 7004);
         }
         if (thisBankIP.equals("172.20.1.3")) {
-            friendlyBanks.put("172.20.1.1", 7001);
-            friendlyBanks.put("172.20.1.3", 7003);
+            friendlyBanks.put("172.20.1.1", 7000);
+            friendlyBanks.put("172.20.1.3", 7004);
         }
     }
 
