@@ -4,6 +4,7 @@ import Thrift.src.BankService;
 import Thrift.src.LoanRequest;
 import Thrift.src.LoanResponse;
 import org.apache.thrift.TException;
+import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TSimpleServer;
 import org.apache.thrift.transport.TServerSocket;
@@ -14,14 +15,22 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BankThriftHandler extends Thread implements BankService.Iface {
+public class BankThriftHandler extends BankService.Client implements BankService.Iface, Runnable {
     private final Bank bank;
     private final Map<String, Integer> friendlyBanks = new HashMap<>();
 
     private TServer server;
 
     public BankThriftHandler(Bank bank) throws UnknownHostException {
+        super(null);
         this.bank = bank;
+        setUpFriendlyBanks();
+        System.out.println("Bank Thrift Handler constructed");
+    }
+
+    public BankThriftHandler(TProtocol protocol) throws UnknownHostException {
+        super(protocol);
+        this.bank = null;
         setUpFriendlyBanks();
         System.out.println("Bank Thrift Handler constructed");
     }
@@ -53,7 +62,13 @@ public class BankThriftHandler extends Thread implements BankService.Iface {
         }
     }
     @Override
-    public LoanResponse requestLoan(LoanRequest request) throws TException {
+    public void requestLoan(LoanRequest request) throws TException {
+
+
+    }
+
+    @Override
+    public LoanResponse processLoanRequest(LoanRequest request) throws TException {
         if(this.bank.getReserves()> request.getAmount()) {
             System.out.println("Set Portfolio in RPC Money" + request.getAmount());
             this.bank.setReserves(this.bank.getReserves()- request.getAmount());

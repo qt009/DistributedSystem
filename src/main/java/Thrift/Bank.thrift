@@ -1,7 +1,8 @@
 namespace java Thrift.src
 
 service BankService {
-    LoanResponse requestLoan(1: LoanRequest request)
+    void requestLoan(1: LoanRequest request)
+    LoanResponse processLoanRequest(1: LoanRequest request)
 }
 struct LoanRequest {1: double amount}
 enum LoanResponse {
