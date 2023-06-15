@@ -8,6 +8,7 @@ services:
     ports:
       - 9000:9000
       - 8000:8000
+      - 7000:7000
     environment:
       THIS_BANK_PORT_UDP: "9000"
       THIS_BANK_PORT_TCP: "8000"
@@ -24,6 +25,7 @@ services:
     ports:
       - 9002:9002
       - 8002:8002
+      - 7002:7002
     environment:
       THIS_BANK_PORT_UDP: "9002"
       THIS_BANK_PORT_TCP: "8002"
@@ -40,10 +42,11 @@ services:
     ports:
       - 9004:9004
       - 8004:8004
+      - 7004:7004
     environment:
       THIS_BANK_PORT_UDP: "9004"
       THIS_BANK_PORT_TCP: "8004"
-      THIS_BANK_PORT_THRIFT: "7002"
+      THIS_BANK_PORT_THRIFT: "7004"
     networks:
       BANKING_NET:
         ipv4_address: 172.20.1.3
