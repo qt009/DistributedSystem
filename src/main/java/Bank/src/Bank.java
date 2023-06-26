@@ -87,7 +87,7 @@ public class Bank implements Runnable {
     private void runMQTTHandler() {
         try {
             System.out.println("Constructing Bank MQTT Handler");
-            bankMQTTHandler = new BankMQTTHandler("tcp://172.20.3.0:2020","bank_" + getBankThriftHandler(),this);
+            bankMQTTHandler = new BankMQTTHandler("tcp://172.20.3.0:1883","bank_" + getBankThriftHandler(),this);
             bankMQTTHandler.start();
         } catch (Exception e) {
             e.printStackTrace();
