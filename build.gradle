@@ -29,7 +29,11 @@ tasks.register('fatJar', Jar) {
         attributes 'Main-Class': "Bank.src.Bank"
     }
     archiveBaseName = 'Bank'
-    from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }{
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+    }
     with jar
 }
 

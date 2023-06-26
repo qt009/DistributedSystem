@@ -1,11 +1,11 @@
-FROM openjdk:11
-RUN apt-get update
+FROM openjdk:17-alpine
 RUN mkdir "Verteiltes_System"
 WORKDIR "Verteiltes_System"
 COPY src/main/java/Bank/src/* src/main/java/Bank/src/
 COPY src/main/java/TCP/src/* src/main/java/TCP/src/
 COPY src/main/java/Stock/* src/main/java/Stock/
 COPY src/main/java/Thrift/* src/main/java/Thrift/
+COPY src/main/java/MOM/* src/main/java/MOM/
 COPY src/* src/
 COPY build/libs/* build/libs/
 
