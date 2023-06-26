@@ -102,7 +102,16 @@ services:
         BANKING_NET:
             ipv4_address: 172.20.2.0
 
-
+  broker:
+    build:
+        context: ./
+        dockerfile: ./src/main/java/MOM/Dockerfile
+    container_name: Broker
+    ports:
+      - 2020:2020
+    networks:
+        BANKING_NET:
+            ipv4_address: 172.20.3.0
 
 
 networks:
