@@ -30,6 +30,7 @@ public class Bank implements Runnable {
     private boolean isBankrupt;
 
     private BankThriftHandler bankThriftHandler;
+    private BankMQTTHandler bankMQTTHandler;
 
     public Bank(String name) {
         this.name = name;
@@ -37,8 +38,6 @@ public class Bank implements Runnable {
         this.reserves = 1000000;
         this.isBankrupt = false;
         setTotalValue();
-
-
     }
 
     public String getName() {
@@ -79,9 +78,20 @@ public class Bank implements Runnable {
 
     @Override
     public void run() {
+        runMQTTHandler();
         runThrift();
         runUDPSocket();
         runTCPSocket();
+    }
+
+    private void runMQTTHandler() {
+        try {
+            System.out.println("Constructing Bank MQTT Handler");
+            bankMQTTHandler = new BankMQTTHandler("tcp://172.20.3.0:2020","bank_" + getBankThriftHandler(),this);
+            bankMQTTHandler.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void runThrift() {
@@ -155,6 +165,7 @@ public class Bank implements Runnable {
     public String getThisBankPortThrift(){
         return System.getenv("THIS_BANK_PORT_Thrift");
     }
+    public String getThisBankIP(){ return System.getenv("THIS_BANK_IP");}
 
     public static void main(String[] args) {
         Bank bank = new Bank("Bank of America");
