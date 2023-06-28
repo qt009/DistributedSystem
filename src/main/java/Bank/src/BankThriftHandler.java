@@ -68,6 +68,7 @@ public class BankThriftHandler extends Thread implements BankService.Iface {
         if(this.bank.getReserves()> request.getAmount()) {
             System.out.println("Set Portfolio in RPC Money" + request.getAmount());
             this.bank.setReserves(this.bank.getReserves()- request.getAmount());
+            bank.setBankValueUpdated(true);
             return LoanResponse.APPROVED;
         }
         return LoanResponse.REJECTED;

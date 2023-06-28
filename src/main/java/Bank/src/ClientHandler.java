@@ -63,6 +63,7 @@ public class ClientHandler implements Runnable {
                         out.println("POST: OK");
                         System.out.println("POST: OK");
                         System.out.println("Update Total Value: " + bank.getTotalValue());
+                        bank.setBankValueUpdated(true);
                         handlePossibleBankruptcy();
                         out.flush();
                         break;

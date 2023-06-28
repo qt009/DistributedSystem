@@ -28,6 +28,7 @@ public class Bank implements Runnable {
 
 
     private boolean isBankrupt;
+    private boolean isBankValueUpdated = false;
 
     private BankThriftHandler bankThriftHandler;
     private BankMQTTHandler bankMQTTHandler;
@@ -86,8 +87,8 @@ public class Bank implements Runnable {
 
     private void runMQTTHandler() {
         try {
-            System.out.println("Constructing Bank MQTT Handler");
-            bankMQTTHandler = new BankMQTTHandler("tcp://172.20.3.0:1883","bank_" + getBankThriftHandler(),this);
+            System.out.println("Constructing Bank MQTT Handler with IP: " + getThisBankIP() + " and Port: " + getThisBankPortThrift());
+            bankMQTTHandler = new BankMQTTHandler("tcp://172.20.3.0:1883","bank_" + getThisBankIP() + ":" + getThisBankPortThrift(),this);
             bankMQTTHandler.start();
         } catch (Exception e) {
             e.printStackTrace();
@@ -149,6 +150,7 @@ public class Bank implements Runnable {
         String abbreviation = parts[0];
         double newPrice = Double.parseDouble(parts[1]);
         updateSecurityPrice(abbreviation, newPrice);
+        setBankValueUpdated(true);
         printPortfolio();
     }
 
@@ -163,9 +165,9 @@ public class Bank implements Runnable {
         return System.getenv("THIS_BANK_PORT_TCP");
     }
     public String getThisBankPortThrift(){
-        return System.getenv("THIS_BANK_PORT_Thrift");
+        return System.getenv("THIS_BANK_PORT_THRIFT");
     }
-    public String getThisBankIP(){ return System.getenv("THIS_BANK_IP");}
+    public String getThisBankIP() throws UnknownHostException { return getInetAddress().getHostAddress();}
 
     public static void main(String[] args) {
         Bank bank = new Bank("Bank of America");
@@ -212,11 +214,9 @@ public class Bank implements Runnable {
         return totalValue + calculatePortfolioValue();
     }
 
-
     public double getReserves() {
         return reserves;
     }
-
     public void setReserves(double reserves) {
         this.reserves = reserves;
     }
@@ -226,6 +226,13 @@ public class Bank implements Runnable {
     }
     public boolean isBankrupt() {
         return isBankrupt;
+    }
+
+    public boolean isBankValueUpdated() {
+        return isBankValueUpdated;
+    }
+    public void setBankValueUpdated(boolean bankValueUpdated) {
+        isBankValueUpdated = bankValueUpdated;
     }
     public BankThriftHandler getBankThriftHandler() {
         return bankThriftHandler;
