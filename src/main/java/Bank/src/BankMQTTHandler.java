@@ -1,13 +1,19 @@
 package Bank.src;
+
+import MOM.src.Follower;
 import MOM.src.Publisher;
 import MOM.src.Subscriber;
 import org.eclipse.paho.client.mqttv3.*;
 
-public class BankMQTTHandler extends Thread implements Publisher, Subscriber {
+import java.net.UnknownHostException;
+
+public class BankMQTTHandler extends Thread implements Publisher, Subscriber, Follower {
     private final MqttClient client;
     private final Bank bank;
+    private boolean isLeader = false;
 
     public BankMQTTHandler(String broker, String clientId, Bank bank) throws MqttException {
+        System.out.println("Constructing Bank MQTT Handler with broker: " + broker + " and client id: " + clientId);
         this.bank = bank;
         client = new MqttClient(broker, clientId);
         client.connect();
@@ -17,7 +23,14 @@ public class BankMQTTHandler extends Thread implements Publisher, Subscriber {
     public void run() {
         try {
             subscribeToBankValues();
-        } catch (MqttException e) {
+            publishBankValue(bank.getTotalValue());
+            while (true) {
+                if(bank.isBankValueUpdated()){
+                    publishBankValue(bank.getTotalValue());
+                    bank.setBankValueUpdated(false);
+                }
+            }
+        } catch (MqttException | UnknownHostException e) {
             e.printStackTrace();
         }
     }
@@ -62,23 +75,33 @@ public class BankMQTTHandler extends Thread implements Publisher, Subscriber {
         client.disconnect();
     }
 
-    public void publishBankValue(double value) throws MqttException {
+    public void publishBankValue(double value) throws MqttException, UnknownHostException {
         String topic = "pub/bank-values/" + bank.getThisBankIP() + ":" + bank.getThisBankPortThrift() + "/" + bank.getTotalValue();
         publish(topic, Double.toString(value));
     }
 
-    public void subscribeToBankValues() throws MqttException {
+    public void subscribeToBankValues() throws MqttException, UnknownHostException {
         String topic = "sub/bank-values/" + bank.getThisBankIP() + ":" + bank.getThisBankPortThrift();
         subscribe(topic);
     }
 
-    public void unsubscribeFromBankValues() throws MqttException {
+    public void unsubscribeFromBankValues() throws MqttException, UnknownHostException {
         String topic = "unsub/bank-values/" + bank.getThisBankIP() + ":" + bank.getThisBankPortThrift();
         unsubscribe(topic);
     }
 
     public void disconnectFromMQTTBroker() throws MqttException {
         disconnect();
+    }
+
+    @Override
+    public void requestVote() {
+
+    }
+
+    @Override
+    public void grantVote() {
+
     }
 }
 
