@@ -23,11 +23,13 @@ public class BankMQTTHandler extends Thread implements Publisher, Subscriber, Fo
     public void run() {
         try {
             subscribeToBankValues();
+            subscribeToVotingSession();
             publishBankValue(bank.getTotalValue());
             while (true) {
                 if(bank.isBankValueUpdated()){
                     publishBankValue(bank.getTotalValue());
                     bank.setBankValueUpdated(false);
+                    displayAssociatedBanksWithValues();
                 }
             }
         } catch (MqttException | UnknownHostException e) {
@@ -53,9 +55,14 @@ public class BankMQTTHandler extends Thread implements Publisher, Subscriber, Fo
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception {
                 // Handle incoming messages
-                String bankId = topic.substring(topic.lastIndexOf('/') + 1);
-                double value = Double.parseDouble(new String(message.getPayload()));
-                System.out.println("Received bank value: " + bankId + " - " + value);
+                System.out.println("Received subscribed message: " + topic + " - " + new String(message.getPayload()));
+
+                String[] bankInfo = message.toString().split("/");
+                String bankAddress = bankInfo[0];
+                String bankTotalValue = bankInfo[1];
+
+                System.out.println("Received subscribed bank value: " + bankAddress + " - " + bankTotalValue);
+                bank.getAssociatedBanks().put(bankAddress, Double.parseDouble(bankTotalValue));
             }
 
             @Override
@@ -76,17 +83,17 @@ public class BankMQTTHandler extends Thread implements Publisher, Subscriber, Fo
     }
 
     public void publishBankValue(double value) throws MqttException, UnknownHostException {
-        String topic = "pub/bank-values/" + bank.getThisBankIP() + ":" + bank.getThisBankPortThrift() + "/" + bank.getTotalValue();
-        publish(topic, Double.toString(value));
+        String topic = "bank-values/";
+        publish(topic, bank.getThisBankIP() + ":" + bank.getThisBankPortThrift() + "/" + value);
     }
 
     public void subscribeToBankValues() throws MqttException, UnknownHostException {
-        String topic = "sub/bank-values/" + bank.getThisBankIP() + ":" + bank.getThisBankPortThrift();
+        String topic = "bank-values/";
         subscribe(topic);
     }
 
     public void unsubscribeFromBankValues() throws MqttException, UnknownHostException {
-        String topic = "unsub/bank-values/" + bank.getThisBankIP() + ":" + bank.getThisBankPortThrift();
+        String topic = "bank-values/";
         unsubscribe(topic);
     }
 
@@ -102,6 +109,18 @@ public class BankMQTTHandler extends Thread implements Publisher, Subscriber, Fo
     @Override
     public void grantVote() {
 
+    }
+
+    public void subscribeToVotingSession() throws MqttException, UnknownHostException {
+        String topic = "start-voting/";
+        subscribe(topic);
+    }
+
+    private void displayAssociatedBanksWithValues(){
+        System.out.println("Associated Banks with Values:");
+        for(String bankAddress : bank.getAssociatedBanks().keySet()){
+            System.out.println(bankAddress + " - " + bank.getAssociatedBanks().get(bankAddress));
+        }
     }
 }
 

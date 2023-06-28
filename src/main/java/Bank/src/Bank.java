@@ -25,8 +25,7 @@ public class Bank implements Runnable {
     private BankTCP bankTCP;
 
     private int totalPackageReceived = 0;
-
-
+    private Map<String, Double> associatedBanks = new HashMap<>();
     private boolean isBankrupt;
     private boolean isBankValueUpdated = false;
 
@@ -151,6 +150,7 @@ public class Bank implements Runnable {
         double newPrice = Double.parseDouble(parts[1]);
         updateSecurityPrice(abbreviation, newPrice);
         setBankValueUpdated(true);
+        System.out.println("Bank is updated: " + isBankValueUpdated());
         printPortfolio();
     }
 
@@ -228,11 +228,14 @@ public class Bank implements Runnable {
         return isBankrupt;
     }
 
-    public boolean isBankValueUpdated() {
+    public synchronized boolean isBankValueUpdated() {
         return isBankValueUpdated;
     }
-    public void setBankValueUpdated(boolean bankValueUpdated) {
+    public synchronized void setBankValueUpdated(boolean bankValueUpdated) {
         isBankValueUpdated = bankValueUpdated;
+    }
+    public Map<String, Double> getAssociatedBanks() {
+        return associatedBanks;
     }
     public BankThriftHandler getBankThriftHandler() {
         return bankThriftHandler;
@@ -281,9 +284,7 @@ public class Bank implements Runnable {
                 System.out.println("Error");
                 e.printStackTrace();
             }
-
         }
-
     }
 }
 
