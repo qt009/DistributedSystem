@@ -8,6 +8,7 @@ import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
+import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.io.IOException;
 import java.net.*;
@@ -241,8 +242,9 @@ public class Bank implements Runnable {
         return bankThriftHandler;
     }
 
-    public void askForHelp() {
-        System.out.println("SENDING HELPING REQUEST");
+    public void askForHelp() throws MqttException, UnknownHostException {
+        System.out.println("SENDING HELP REQUEST");
+        bankMQTTHandler.publish("bail-out", getThisBankIP() + ":" + getThisBankPortThrift() + "/" + 100000);
         for (Map.Entry<String, Integer> entry : bankThriftHandler.getFriendlyBanks().entrySet()) {
             String hostRpc = entry.getKey();
             int portRpc = entry.getValue();
@@ -254,7 +256,7 @@ public class Bank implements Runnable {
                 BankService.Client client = new BankService.Client(protocol);
                 transport.open();
 
-                double value = 100000;
+                double value = bankMQTTHandler.getBailAmount();
                 LoanRequest request = new LoanRequest(value);
                 LoanResponse response = client.processLoanRequest(request);
 
@@ -262,12 +264,10 @@ public class Bank implements Runnable {
                 if(response.equals(LoanResponse.APPROVED)){
                     System.out.println(hostRpc+ " success to rescue");
                     this.setReserves(getReserves() + value);
-                    break;
+                    //break;
                 }
                 else if(response.equals(LoanResponse.REJECTED)){
                     System.out.println(hostRpc+" fail to rescue");
-                    //check if all friendly banks fail to rescue
-                    //if so, this bank is bankrupt
                     Map.Entry<String, Integer> lastEntry = bankThriftHandler.getFriendlyBanks().entrySet().stream().reduce((one, two) -> two).get();
                     if(entry.equals(lastEntry)){
                         System.out.println("Bankrupt");

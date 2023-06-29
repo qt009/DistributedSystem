@@ -1,7 +1,10 @@
 package Bank.src;
 
+import org.eclipse.paho.client.mqttv3.MqttException;
+
 import java.io.*;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Objects;
 
 public class ClientHandler implements Runnable {
@@ -105,10 +108,12 @@ public class ClientHandler implements Runnable {
             clientSocket.close();
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (MqttException e) {
+            throw new RuntimeException(e);
         }
 
     }
-    public void handlePossibleBankruptcy(){
+    public void handlePossibleBankruptcy() throws UnknownHostException, MqttException {
         if(bank.getTotalValue() <= 0){
             bank.askForHelp();
         }
