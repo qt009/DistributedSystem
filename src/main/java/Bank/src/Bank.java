@@ -244,6 +244,7 @@ public class Bank implements Runnable {
 
     public void askForHelp() throws MqttException, UnknownHostException {
         System.out.println("SENDING HELP REQUEST");
+        long startTime = System.currentTimeMillis();
         bankMQTTHandler.publish("bail-out", getThisBankIP() + ":" + getThisBankPortThrift() + "/" + 100000);
         for (Map.Entry<String, Integer> entry : bankThriftHandler.getFriendlyBanks().entrySet()) {
             String hostRpc = entry.getKey();
@@ -259,8 +260,10 @@ public class Bank implements Runnable {
                 double value = bankMQTTHandler.getBailAmount();
                 LoanRequest request = new LoanRequest(value);
                 LoanResponse response = client.processLoanRequest(request);
+                long endTime = System.currentTimeMillis();
+                long timeElapsed = endTime - startTime;
 
-                System.out.println("Response: "+ response);
+                System.out.println("Response: "+ response + " came in "+ timeElapsed + "ms");
                 if(response.equals(LoanResponse.APPROVED)){
                     System.out.println(hostRpc+ " success to rescue");
                     this.setReserves(getReserves() + value);

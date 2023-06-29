@@ -17,6 +17,9 @@ public class BankMQTTHandler extends Thread implements Publisher, Subscriber, Fo
     private Map<String, Integer> votes = new HashMap<>();
 
     private double bailAmount = 0;
+    private int acceptMessagesReceived = 0;
+
+    private boolean choseToBail = false;
 
     public BankMQTTHandler(String broker, String clientId, Bank bank) throws MqttException {
         System.out.println("Constructing Bank MQTT Handler with broker: " + broker + " and client id: " + clientId);
@@ -111,20 +114,52 @@ public class BankMQTTHandler extends Thread implements Publisher, Subscriber, Fo
                     }
                     case "bail-out/": {
                         if(isLeader){
+                            int totalAmountOfBanks = bank.getAssociatedBanks().size();
                             String[] bankInfo = message.toString().split("/");
                             String bankAddress = bankInfo[0];
                             String bailAmount = bankInfo[1];
 
-                            System.out.println("Received to bail value: " + bankAddress + " - " + bailAmount);
-                            publish("bail-out-granted/", bailAmount);
+                            if(bailAmount.equals("ACCEPTED")){
+                                acceptMessagesReceived++;
+                            }
+                            if(bailAmount.equals("DENIED")){
+                                acceptMessagesReceived--;
+                                publish("bail-out-denied/", "DENIED");
+                                break;
+                            }
+
+                            if(acceptMessagesReceived == totalAmountOfBanks){
+                                publish("bail-out-granted/", bailAmount);
+                            }
+
                         }
+                        else{
+                            String[] bankInfo = message.toString().split("/");
+                            String bankAddress = bankInfo[0];
+                            String bailAmount = bankInfo[1];
+
+                            if(bankAddress.equals(bank.getThisBankIP() + ":" + bank.getThisBankPortThrift())){
+                                break;
+                            }
+                            if(bank.getTotalValue() <= Double.parseDouble(bailAmount)){
+                                publish("bail-out/", "DENIED");
+                            }
+                            else{
+                                choseToBail = true;
+                                publish("bail-out/", "ACCEPTED");
+                            }
+                        }
+                        break;
                     }
                     case "bail-out-granted":
+                        if(choseToBail) {
+                            String bailAmount = message.toString();
+                            System.out.println("Received bail-out-granted message: " + bailAmount);
 
-                        String bailAmount = message.toString();
-                        System.out.println("Received bail-out-granted message: " + bailAmount);
+                            setBailAmount(Double.parseDouble(bailAmount) / (bank.getAssociatedBanks().size()));
+                            choseToBail = false;
+                        }
 
-                        setBailAmount(Double.parseDouble(bailAmount) / (bank.getAssociatedBanks().size()));
 
                 }
             }
