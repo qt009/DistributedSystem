@@ -123,7 +123,6 @@ public class BankMQTTHandler extends Thread implements Publisher, Subscriber, Fo
                                 acceptMessagesReceived++;
                             }
                             if(bailAmount.equals("DENIED")){
-                                acceptMessagesReceived--;
                                 publish("bail-out-denied/", "DENIED");
                                 break;
                             }
